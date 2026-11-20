@@ -1,0 +1,49 @@
+[
+  {
+    "id": "E01",
+    "action": "change",
+    "tariff_id": "T01",
+    "addon_ids": [
+      "A01"
+    ],
+    "current_monthly_cost": 350.0,
+    "new_monthly_cost": 200.0,
+    "monthly_savings": 150.0,
+    "switch_fee": 50.0,
+    "net_savings_3m": 400.0,
+    "monthly_costs": {
+      "2026-08": 200.0,
+      "2026-09": 200.0,
+      "2026-10": 200.0
+    },
+    "consumption_on_recommended_tariff": [
+      {
+        "month": "2026-08",
+        "billable_usage": {
+          "call": 0.0,
+          "sms": 0.0,
+          "data": 6.0
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-09",
+        "billable_usage": {
+          "call": 0.0,
+          "sms": 0.0,
+          "data": 6.0
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-10",
+        "billable_usage": {
+          "call": 0.0,
+          "sms": 0.0,
+          "data": 6.0
+        },
+        "roaming_cost_som": 0.0
+      }
+    ]
+  }
+]

@@ -1,0 +1,47 @@
+[
+  {
+    "id": "E01",
+    "action": "stay",
+    "tariff_id": "T04",
+    "addon_ids": [],
+    "current_monthly_cost": 350.0,
+    "new_monthly_cost": 350.0,
+    "monthly_savings": 0.0,
+    "switch_fee": 0.0,
+    "net_savings_3m": 0.0,
+    "monthly_costs": {
+      "2026-08": 350.0,
+      "2026-09": 350.0,
+      "2026-10": 350.0
+    },
+    "consumption_on_recommended_tariff": [
+      {
+        "month": "2026-08",
+        "billable_usage": {
+          "call": 0.0,
+          "sms": 0.0,
+          "data": 0.0
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-09",
+        "billable_usage": {
+          "call": 0.0,
+          "sms": 0.0,
+          "data": 0.0
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-10",
+        "billable_usage": {
+          "call": 0.0,
+          "sms": 0.0,
+          "data": 0.0
+        },
+        "roaming_cost_som": 0.0
+      }
+    ]
+  }
+]

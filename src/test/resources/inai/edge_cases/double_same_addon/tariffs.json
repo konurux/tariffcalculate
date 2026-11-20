@@ -1,0 +1,80 @@
+{
+  "currency": "KGS",
+  "tariffs": [
+    {
+      "id": "T01",
+      "name": "Старт",
+      "fee": 100,
+      "minutes": 50,
+      "gb": 1,
+      "sms": 20,
+      "overage": {
+        "call": 2,
+        "data": 80,
+        "sms": 1
+      },
+      "night_unlimited": false
+    },
+    {
+      "id": "T02",
+      "name": "Комфорт",
+      "fee": 300,
+      "minutes": 200,
+      "gb": 8,
+      "sms": 100,
+      "overage": {
+        "call": 1.5,
+        "data": 60,
+        "sms": 0.8
+      },
+      "night_unlimited": false
+    },
+    {
+      "id": "T03",
+      "name": "Онлайн",
+      "fee": 450,
+      "minutes": 100,
+      "gb": 20,
+      "sms": 50,
+      "overage": {
+        "call": 2,
+        "data": 50,
+        "sms": 1
+      },
+      "night_unlimited": false
+    },
+    {
+      "id": "T04",
+      "name": "Ночной",
+      "fee": 350,
+      "minutes": 150,
+      "gb": 5,
+      "sms": 50,
+      "overage": {
+        "call": 2,
+        "data": 70,
+        "sms": 1
+      },
+      "night_unlimited": true
+    },
+    {
+      "id": "T05",
+      "name": "Максимум",
+      "fee": 700,
+      "minutes": 600,
+      "gb": 40,
+      "sms": 300,
+      "overage": {
+        "call": 1,
+        "data": 40,
+        "sms": 0.5
+      },
+      "night_unlimited": false
+    }
+  ],
+  "roaming_rates": {
+    "call": 15,
+    "data": 500,
+    "sms": 5
+  }
+}

@@ -1,0 +1,456 @@
+[
+  {
+    "id": "P01",
+    "action": "stay",
+    "tariff_id": "T01",
+    "addon_ids": [],
+    "current_monthly_cost": 100.0,
+    "new_monthly_cost": 100.0,
+    "monthly_savings": 0.0,
+    "switch_fee": 0.0,
+    "net_savings_3m": 0.0,
+    "monthly_costs": {
+      "2026-08": 100.0,
+      "2026-09": 100.0,
+      "2026-10": 100.0
+    },
+    "consumption_on_recommended_tariff": [
+      {
+        "month": "2026-08",
+        "billable_usage": {
+          "call": 0.0,
+          "sms": 0.0,
+          "data": 0.0
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-09",
+        "billable_usage": {
+          "call": 0.0,
+          "sms": 0.0,
+          "data": 0.0
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-10",
+        "billable_usage": {
+          "call": 0.0,
+          "sms": 0.0,
+          "data": 0.0
+        },
+        "roaming_cost_som": 0.0
+      }
+    ]
+  },
+  {
+    "id": "P02",
+    "action": "change",
+    "tariff_id": "T01",
+    "addon_ids": [],
+    "current_monthly_cost": 300.0,
+    "new_monthly_cost": 100.0,
+    "monthly_savings": 200.0,
+    "switch_fee": 50.0,
+    "net_savings_3m": 550.0,
+    "monthly_costs": {
+      "2026-08": 100.0,
+      "2026-09": 100.0,
+      "2026-10": 100.0
+    },
+    "consumption_on_recommended_tariff": [
+      {
+        "month": "2026-08",
+        "billable_usage": {
+          "call": 50.0,
+          "sms": 20.0,
+          "data": 1.0
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-09",
+        "billable_usage": {
+          "call": 50.0,
+          "sms": 20.0,
+          "data": 1.0
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-10",
+        "billable_usage": {
+          "call": 50.0,
+          "sms": 20.0,
+          "data": 1.0
+        },
+        "roaming_cost_som": 0.0
+      }
+    ]
+  },
+  {
+    "id": "P03",
+    "action": "change",
+    "tariff_id": "T02",
+    "addon_ids": [],
+    "current_monthly_cost": 1170.0,
+    "new_monthly_cost": 420.0,
+    "monthly_savings": 750.0,
+    "switch_fee": 50.0,
+    "net_savings_3m": 2200.0,
+    "monthly_costs": {
+      "2026-08": 420.0,
+      "2026-09": 420.0,
+      "2026-10": 420.0
+    },
+    "consumption_on_recommended_tariff": [
+      {
+        "month": "2026-08",
+        "billable_usage": {
+          "call": 240.0,
+          "sms": 70.0,
+          "data": 9.0
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-09",
+        "billable_usage": {
+          "call": 240.0,
+          "sms": 70.0,
+          "data": 9.0
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-10",
+        "billable_usage": {
+          "call": 240.0,
+          "sms": 70.0,
+          "data": 9.0
+        },
+        "roaming_cost_som": 0.0
+      }
+    ]
+  },
+  {
+    "id": "P04",
+    "action": "change",
+    "tariff_id": "T05",
+    "addon_ids": [],
+    "current_monthly_cost": 1200.0,
+    "new_monthly_cost": 700.0,
+    "monthly_savings": 500.0,
+    "switch_fee": 50.0,
+    "net_savings_3m": 1450.0,
+    "monthly_costs": {
+      "2026-08": 700.0,
+      "2026-09": 700.0,
+      "2026-10": 700.0
+    },
+    "consumption_on_recommended_tariff": [
+      {
+        "month": "2026-08",
+        "billable_usage": {
+          "call": 60.0,
+          "sms": 15.0,
+          "data": 35.0
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-09",
+        "billable_usage": {
+          "call": 60.0,
+          "sms": 15.0,
+          "data": 35.0
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-10",
+        "billable_usage": {
+          "call": 60.0,
+          "sms": 15.0,
+          "data": 35.0
+        },
+        "roaming_cost_som": 0.0
+      }
+    ]
+  },
+  {
+    "id": "P05",
+    "action": "stay",
+    "tariff_id": "T05",
+    "addon_ids": [],
+    "current_monthly_cost": 865.0,
+    "new_monthly_cost": 865.0,
+    "monthly_savings": 0.0,
+    "switch_fee": 0.0,
+    "net_savings_3m": 0.0,
+    "monthly_costs": {
+      "2026-08": 865.0,
+      "2026-09": 865.0,
+      "2026-10": 865.0
+    },
+    "consumption_on_recommended_tariff": [
+      {
+        "month": "2026-08",
+        "billable_usage": {
+          "call": 550.0,
+          "sms": 280.0,
+          "data": 39.0
+        },
+        "roaming_cost_som": 165.0
+      },
+      {
+        "month": "2026-09",
+        "billable_usage": {
+          "call": 550.0,
+          "sms": 280.0,
+          "data": 39.0
+        },
+        "roaming_cost_som": 165.0
+      },
+      {
+        "month": "2026-10",
+        "billable_usage": {
+          "call": 550.0,
+          "sms": 280.0,
+          "data": 39.0
+        },
+        "roaming_cost_som": 165.0
+      }
+    ]
+  },
+  {
+    "id": "P06",
+    "action": "add_packages",
+    "tariff_id": "T04",
+    "addon_ids": [
+      "A01"
+    ],
+    "current_monthly_cost": 647.5,
+    "new_monthly_cost": 450.0,
+    "monthly_savings": 197.5,
+    "switch_fee": 0.0,
+    "net_savings_3m": 592.5,
+    "monthly_costs": {
+      "2026-08": 450.0,
+      "2026-09": 450.0,
+      "2026-10": 450.0
+    },
+    "consumption_on_recommended_tariff": [
+      {
+        "month": "2026-08",
+        "billable_usage": {
+          "call": 100.0,
+          "sms": 20.0,
+          "data": 9.25
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-09",
+        "billable_usage": {
+          "call": 100.0,
+          "sms": 20.0,
+          "data": 9.25
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-10",
+        "billable_usage": {
+          "call": 100.0,
+          "sms": 20.0,
+          "data": 9.25
+        },
+        "roaming_cost_som": 0.0
+      }
+    ]
+  },
+  {
+    "id": "P07",
+    "action": "stay",
+    "tariff_id": "T01",
+    "addon_ids": [],
+    "current_monthly_cost": 102.0,
+    "new_monthly_cost": 102.0,
+    "monthly_savings": 0.0,
+    "switch_fee": 0.0,
+    "net_savings_3m": 0.0,
+    "monthly_costs": {
+      "2026-08": 102.0,
+      "2026-09": 102.0,
+      "2026-10": 102.0
+    },
+    "consumption_on_recommended_tariff": [
+      {
+        "month": "2026-08",
+        "billable_usage": {
+          "call": 51.0,
+          "sms": 20.0,
+          "data": 1.0
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-09",
+        "billable_usage": {
+          "call": 51.0,
+          "sms": 20.0,
+          "data": 1.0
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-10",
+        "billable_usage": {
+          "call": 51.0,
+          "sms": 20.0,
+          "data": 1.0
+        },
+        "roaming_cost_som": 0.0
+      }
+    ]
+  },
+  {
+    "id": "P08",
+    "action": "stay",
+    "tariff_id": "T01",
+    "addon_ids": [],
+    "current_monthly_cost": 200.0,
+    "new_monthly_cost": 200.0,
+    "monthly_savings": 0.0,
+    "switch_fee": 0.0,
+    "net_savings_3m": 0.0,
+    "monthly_costs": {
+      "2026-08": 200.0,
+      "2026-09": 200.0,
+      "2026-10": 200.0
+    },
+    "consumption_on_recommended_tariff": [
+      {
+        "month": "2026-08",
+        "billable_usage": {
+          "call": 50.0,
+          "sms": 20.0,
+          "data": 2.25
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-09",
+        "billable_usage": {
+          "call": 50.0,
+          "sms": 20.0,
+          "data": 2.25
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-10",
+        "billable_usage": {
+          "call": 50.0,
+          "sms": 20.0,
+          "data": 2.25
+        },
+        "roaming_cost_som": 0.0
+      }
+    ]
+  },
+  {
+    "id": "P09",
+    "action": "stay",
+    "tariff_id": "T02",
+    "addon_ids": [],
+    "current_monthly_cost": 307.5,
+    "new_monthly_cost": 307.5,
+    "monthly_savings": 0.0,
+    "switch_fee": 0.0,
+    "net_savings_3m": 0.0,
+    "monthly_costs": {
+      "2026-08": 307.5,
+      "2026-09": 307.5,
+      "2026-10": 307.5
+    },
+    "consumption_on_recommended_tariff": [
+      {
+        "month": "2026-08",
+        "billable_usage": {
+          "call": 205.0,
+          "sms": 100.0,
+          "data": 8.0
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-09",
+        "billable_usage": {
+          "call": 205.0,
+          "sms": 100.0,
+          "data": 8.0
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-10",
+        "billable_usage": {
+          "call": 205.0,
+          "sms": 100.0,
+          "data": 8.0
+        },
+        "roaming_cost_som": 0.0
+      }
+    ]
+  },
+  {
+    "id": "P10",
+    "action": "change",
+    "tariff_id": "T01",
+    "addon_ids": [
+      "A01"
+    ],
+    "current_monthly_cost": 700.0,
+    "new_monthly_cost": 243.33,
+    "monthly_savings": 456.67,
+    "switch_fee": 50.0,
+    "net_savings_3m": 1320.0,
+    "monthly_costs": {
+      "2026-08": 265.0,
+      "2026-09": 200.0,
+      "2026-10": 265.0
+    },
+    "consumption_on_recommended_tariff": [
+      {
+        "month": "2026-08",
+        "billable_usage": {
+          "call": 80.0,
+          "sms": 25.0,
+          "data": 5.0
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-09",
+        "billable_usage": {
+          "call": 0.0,
+          "sms": 0.0,
+          "data": 0.0
+        },
+        "roaming_cost_som": 0.0
+      },
+      {
+        "month": "2026-10",
+        "billable_usage": {
+          "call": 80.0,
+          "sms": 25.0,
+          "data": 5.0
+        },
+        "roaming_cost_som": 0.0
+      }
+    ]
+  }
+]

@@ -1,0 +1,102 @@
+[
+  {
+    "id": "P01",
+    "current_tariff_id": "T01",
+    "months": [
+      "2026-08",
+      "2026-09",
+      "2026-10"
+    ],
+    "usage_file": "usage_P01.csv"
+  },
+  {
+    "id": "P02",
+    "current_tariff_id": "T02",
+    "months": [
+      "2026-08",
+      "2026-09",
+      "2026-10"
+    ],
+    "usage_file": "usage_P02.csv"
+  },
+  {
+    "id": "P03",
+    "current_tariff_id": "T01",
+    "months": [
+      "2026-08",
+      "2026-09",
+      "2026-10"
+    ],
+    "usage_file": "usage_P03.csv"
+  },
+  {
+    "id": "P04",
+    "current_tariff_id": "T03",
+    "months": [
+      "2026-08",
+      "2026-09",
+      "2026-10"
+    ],
+    "usage_file": "usage_P04.csv"
+  },
+  {
+    "id": "P05",
+    "current_tariff_id": "T05",
+    "months": [
+      "2026-08",
+      "2026-09",
+      "2026-10"
+    ],
+    "usage_file": "usage_P05.csv"
+  },
+  {
+    "id": "P06",
+    "current_tariff_id": "T04",
+    "months": [
+      "2026-08",
+      "2026-09",
+      "2026-10"
+    ],
+    "usage_file": "usage_P06.csv"
+  },
+  {
+    "id": "P07",
+    "current_tariff_id": "T01",
+    "months": [
+      "2026-08",
+      "2026-09",
+      "2026-10"
+    ],
+    "usage_file": "usage_P07.csv"
+  },
+  {
+    "id": "P08",
+    "current_tariff_id": "T01",
+    "months": [
+      "2026-08",
+      "2026-09",
+      "2026-10"
+    ],
+    "usage_file": "usage_P08.csv"
+  },
+  {
+    "id": "P09",
+    "current_tariff_id": "T02",
+    "months": [
+      "2026-08",
+      "2026-09",
+      "2026-10"
+    ],
+    "usage_file": "usage_P09.csv"
+  },
+  {
+    "id": "P10",
+    "current_tariff_id": "T05",
+    "months": [
+      "2026-08",
+      "2026-09",
+      "2026-10"
+    ],
+    "usage_file": "usage_P10.csv"
+  }
+]

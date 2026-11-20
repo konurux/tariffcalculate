@@ -1,0 +1,12 @@
+[
+  {
+    "id": "E01",
+    "current_tariff_id": "T04",
+    "months": [
+      "2026-08",
+      "2026-09",
+      "2026-10"
+    ],
+    "usage_file": "usage_E01.csv"
+  }
+]

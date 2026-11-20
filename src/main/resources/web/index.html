@@ -1,0 +1,2263 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Калькулятор тарифа</title>
+<script>try { if (sessionStorage.getItem('onboarding_seen')) document.documentElement.classList.add('ob-seen'); } catch (e) { }</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --md-primary: #ffd200;
+    --md-primary-hover: #f2c500;
+    --md-on-primary: #000000;
+    --md-primary-container: #fff4bf;
+    --md-on-primary-container: #1a1a1a;
+    --accent-text: #6b5400;
+    --md-secondary: #5c5c5c;
+    --md-secondary-container: #ebebeb;
+    --md-on-secondary-container: #000000;
+    --md-tertiary: #000000;
+    --md-tertiary-container: #1a1a1a;
+    --md-on-tertiary-container: #ffd200;
+    --md-error: #ba1a1a;
+    --md-error-container: #ffdad6;
+    --md-on-error-container: #410002;
+    --md-surface: #ffffff;
+    --md-surface-container-lowest: #ffffff;
+    --md-surface-container-low: #f6f6f6;
+    --md-surface-container: #f0f0f0;
+    --md-surface-container-high: #e9e9e9;
+    --md-surface-container-highest: #e2e2e2;
+    --md-on-surface: #191919;
+    --md-on-surface-variant: #5c5c5c;
+    --md-outline: #8c8c8c;
+    --md-outline-variant: #dcdcdc;
+    --md-inverse-surface: #1a1a1a;
+    --md-inverse-on-surface: #ffffff;
+    --focus: #000000;
+    --bar: #dcdcdc;
+    --c-fee: #3a3a3a;
+    --c-addons: #a3a3a3;
+    --c-over: #e0523a;
+    --c-roam: #3f78d6;
+    --shape-xs: 4px; --shape-s: 8px; --shape-m: 12px; --shape-l: 16px; --shape-xl: 28px; --shape-full: 999px;
+    --font: "Roboto Flex", Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --ease: cubic-bezier(.2, 0, 0, 1);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --md-primary: #ffd200;
+      --md-primary-hover: #ffdc33;
+      --md-on-primary: #000000;
+      --md-primary-container: #3a3200;
+      --md-on-primary-container: #ffe98a;
+      --accent-text: #ffd200;
+      --md-secondary: #b3b3b3;
+      --md-secondary-container: #2f2f2f;
+      --md-on-secondary-container: #f0f0f0;
+      --md-tertiary: #f0f0f0;
+      --md-tertiary-container: #ffd200;
+      --md-on-tertiary-container: #000000;
+      --md-error: #ffb4ab;
+      --md-error-container: #93000a;
+      --md-on-error-container: #ffdad6;
+      --md-surface: #121212;
+      --md-surface-container-lowest: #0c0c0c;
+      --md-surface-container-low: #1a1a1a;
+      --md-surface-container: #1f1f1f;
+      --md-surface-container-high: #282828;
+      --md-surface-container-highest: #323232;
+      --md-on-surface: #f0f0f0;
+      --md-on-surface-variant: #b3b3b3;
+      --md-outline: #8c8c8c;
+      --md-outline-variant: #3a3a3a;
+      --md-inverse-surface: #f0f0f0;
+      --md-inverse-on-surface: #121212;
+      --focus: #ffd200;
+      --bar: #4d4d4d;
+      --c-fee: #d0d0d0;
+      --c-addons: #7d7d7d;
+      --c-over: #ff7a63;
+      --c-roam: #7aa6ff;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--md-surface); color: var(--md-on-surface);
+    font: 400 14px/20px var(--font); letter-spacing: .01em; -webkit-font-smoothing: antialiased;
+  }
+  .title-l { font-size: 22px; line-height: 28px; font-weight: 500; letter-spacing: 0; }
+  .title-m { font-size: 16px; line-height: 24px; font-weight: 500; letter-spacing: .01em; }
+  .label-l { font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: .01em; }
+  .label-m { font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: .04em; }
+  .body-s { font-size: 12px; line-height: 16px; color: var(--md-on-surface-variant); }
+  .muted { color: var(--md-on-surface-variant); }
+  svg.ic { width: 18px; height: 18px; fill: currentColor; flex: none; }
+
+  .appbar {
+    position: sticky; top: 0; z-index: 5; background: var(--md-surface);
+    transition: background .2s var(--ease);
+  }
+  .appbar.scrolled { background: var(--md-surface-container); }
+  .appbar-inner { max-width: 1320px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; gap: 12px; min-height: 64px; }
+  .logo {
+    width: 40px; height: 40px; border-radius: var(--shape-m); display: grid; place-items: center;
+    background: var(--md-primary); color: var(--md-on-primary);
+  }
+  .logo svg { width: 22px; height: 22px; fill: currentColor; }
+  .appbar h1 { margin: 0; }
+  .progress { height: 4px; overflow: hidden; background: transparent; }
+  .progress.on { background: var(--md-primary-container); }
+  .progress.on::after {
+    content: ""; display: block; height: 100%; width: 40%; background: var(--md-primary); border-radius: 2px;
+    animation: indet 1.2s var(--ease) infinite;
+  }
+  @keyframes indet { from { transform: translateX(-100%); } to { transform: translateX(260%); } }
+
+  main { max-width: 1320px; margin: 0 auto; padding: 8px 16px 64px; }
+  .layout { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 16px; align-items: start; }
+  .card { border-radius: var(--shape-m); padding: 20px; }
+  .card.filled { background: var(--md-surface-container-low); }
+  .card.outlined { background: var(--md-surface); border: 1px solid var(--md-outline-variant); }
+  .card h2 { margin: 0 0 16px; }
+  .stack > * + * { margin-top: 16px; }
+  .side { position: sticky; top: 84px; }
+
+  .segmented { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--md-outline); border-radius: var(--shape-full); overflow: hidden; height: 40px; }
+  .segmented button {
+    all: unset; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    font: 500 14px/20px var(--font); color: var(--md-on-surface); position: relative;
+  }
+  .segmented button + button { border-left: 1px solid var(--md-outline); }
+  .segmented button[aria-pressed="true"] { background: var(--md-primary); color: var(--md-on-primary); }
+  .segmented button:not([aria-pressed="true"]) svg { display: none; }
+  .segmented button:hover { background-image: linear-gradient(rgb(0 0 0 / .05), rgb(0 0 0 / .05)); }
+  .segmented button:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+
+  .drop {
+    border: 1px dashed var(--md-outline); border-radius: var(--shape-m); padding: 20px 16px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; cursor: pointer;
+    color: var(--md-on-surface-variant); transition: background .15s var(--ease), border-color .15s var(--ease);
+  }
+  .drop:hover { background: var(--md-surface-container); }
+  .drop.over { border-style: solid; border-color: var(--md-on-surface); background: var(--md-primary-container); color: var(--md-on-primary-container); }
+  .drop.has-file { border-style: solid; border-color: var(--md-outline-variant); background: var(--md-surface-container-lowest); color: var(--md-on-surface); }
+  .drop svg { width: 28px; height: 28px; fill: currentColor; }
+  .drop:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .drop .file-name { font-weight: 500; word-break: break-all; }
+
+  .field { position: relative; }
+  .field select {
+    appearance: none; width: 100%; height: 56px; padding: 16px 40px 0 16px; border-radius: var(--shape-xs);
+    border: 1px solid var(--md-outline); background: transparent; color: var(--md-on-surface);
+    font: 400 16px/24px var(--font); cursor: pointer;
+  }
+  .field select:hover { border-color: var(--md-on-surface); }
+  .field select:focus { outline: none; border: 2px solid var(--md-on-surface); padding-left: 15px; }
+  .field label { position: absolute; left: 16px; top: 8px; font-size: 12px; line-height: 16px; color: var(--md-on-surface-variant); pointer-events: none; }
+  .field select:focus + label { color: var(--accent-text); }
+  .field::after {
+    content: ""; position: absolute; right: 16px; top: 26px; border: 5px solid transparent;
+    border-top-color: var(--md-on-surface-variant); pointer-events: none;
+  }
+  .field .support { padding: 4px 16px 0; }
+  .field.attention select { border: 2px solid var(--md-error); padding-left: 15px; }
+  .field.attention label, .field.attention .support { color: var(--md-error); }
+  .field select option { background: var(--md-surface-container-high); color: var(--md-on-surface); }
+
+  .btn {
+    all: unset; box-sizing: border-box; cursor: pointer; height: 40px; padding: 0 24px; border-radius: var(--shape-full);
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: 500 14px/20px var(--font);
+    letter-spacing: .01em; position: relative; overflow: hidden; transition: box-shadow .15s var(--ease);
+  }
+  .btn.filled { background: var(--md-primary); color: var(--md-on-primary); width: 100%; padding-left: 16px; }
+  .btn.filled:hover { box-shadow: 0 1px 2px rgb(0 0 0 / .3), 0 1px 3px 1px rgb(0 0 0 / .15); }
+  .btn.tonal { background: var(--md-secondary-container); color: var(--md-on-secondary-container); padding-left: 16px; }
+  .btn.text { color: var(--accent-text); padding: 0 12px; }
+  .btn::before { content: ""; position: absolute; inset: 0; background: currentColor; opacity: 0; transition: opacity .15s; }
+  .btn:hover::before { opacity: .08; }
+  .btn:active::before { opacity: .12; }
+  .btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .btn[disabled] { opacity: .38; pointer-events: none; }
+
+  .empty { padding: 48px 24px; text-align: center; }
+  .empty .illus { width: 72px; height: 72px; margin: 0 auto 16px; border-radius: var(--shape-xl); display: grid; place-items: center; background: var(--md-surface-container-high); color: var(--md-on-surface-variant); }
+  .empty .illus svg { width: 32px; height: 32px; fill: currentColor; }
+  .empty p { max-width: 420px; margin: 8px auto 0; }
+  .steps { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: var(--shape-s);
+    border: 1px solid var(--md-outline-variant); font: 500 14px/20px var(--font); color: var(--md-on-surface-variant);
+  }
+  .chip b { font-weight: 600; color: var(--accent-text); }
+
+  .verdict { border-radius: var(--shape-l); padding: 20px; display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; }
+  .verdict.switch { background: var(--md-primary-container); color: var(--md-on-primary-container); }
+  .verdict.stay { background: var(--md-secondary-container); color: var(--md-on-secondary-container); }
+  .verdict .badge { grid-row: span 3; width: 48px; height: 48px; border-radius: var(--shape-full); display: grid; place-items: center; background: var(--md-surface-container-lowest); }
+  .verdict.switch .badge { background: var(--md-primary); color: var(--md-on-primary); }
+  .verdict.stay .badge { color: var(--md-secondary); }
+  .verdict .badge svg { width: 24px; height: 24px; fill: currentColor; }
+  .verdict .eyebrow { opacity: .8; }
+  .verdict .headline { font-size: 24px; line-height: 32px; font-weight: 500; margin: 0; }
+  .verdict p { margin: 4px 0 0; opacity: .9; }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .stat { background: var(--md-surface-container); border-radius: var(--shape-m); padding: 12px 16px; }
+  .stat .v { font-size: 22px; line-height: 28px; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; margin-top: 4px; }
+  .stat .v small { font-size: 14px; font-weight: 400; color: var(--md-on-surface-variant); margin-left: 2px; }
+  .stat.accent { background: var(--md-tertiary-container); color: var(--md-on-tertiary-container); }
+  .stat.accent .v small, .stat.accent .muted { color: inherit; opacity: .8; }
+
+  :root { --c-minor: #f29f05; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --c-minor: #ffb547; } }
+  #dashCard { container-type: inline-size; }
+  .dash { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  @container (max-width: 780px) { .dash { grid-template-columns: minmax(0, 1fr); } }
+  .dp { min-width: 0; border-radius: 20px; padding: 18px 18px 16px; background: var(--md-surface-container-lowest); border: 1px solid var(--md-outline-variant); display: flex; flex-direction: column; }
+  .dp.rec { border: 2px solid var(--md-primary); padding: 17px 17px 15px; }
+  .dp-tag { align-self: flex-start; padding: 4px 10px; border-radius: var(--shape-s); font-size: 11px; line-height: 16px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; background: var(--md-surface-container-high); color: var(--md-on-surface-variant); }
+  .dp-tag.bad { background: var(--md-error-container); color: var(--md-on-error-container); }
+  .dp-tag.minor { background: var(--warn-bg); color: var(--warn-fg); }
+  .dp-tag.good { background: var(--ok-bg); color: var(--ok-fg); }
+  .dp-tag.rec { background: var(--md-primary); color: var(--md-on-primary); }
+  .dp h3 { margin: 10px 0 2px; font-size: 18px; line-height: 24px; font-weight: 600; }
+  .dp h3 small { font-size: 12px; font-weight: 500; color: var(--md-on-surface-variant); margin-left: 4px; }
+  .dp-sub { font-size: 12px; line-height: 16px; color: var(--md-on-surface-variant); min-height: 16px; }
+  .dp-cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 18px; }
+  .dc { display: flex; flex-direction: column; align-items: center; min-width: 0; text-align: center; }
+  .dc-track { position: relative; width: 100%; height: 210px; margin-top: 30px; }
+  .dc-rail { position: absolute; left: 50%; bottom: 0; top: 0; width: 60%; max-width: 64px; transform: translateX(-50%); border-radius: 10px; background: var(--md-surface-container); }
+  .dc-bar { position: absolute; left: 50%; bottom: 0; width: 60%; max-width: 64px; transform: translateX(-50%); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column-reverse; transition: height .5s cubic-bezier(.16, 1, .3, 1); }
+  .dc-bar i { display: block; flex: none; }
+  .seg-in { background: var(--c-fee); }
+  .seg-over { background: var(--c-over); animation: overPulse 2.4s ease-in-out infinite; }
+  .seg-minor { background: var(--c-minor); }
+  .seg-night { background: repeating-linear-gradient(-45deg, var(--md-outline-variant) 0 4px, var(--md-surface-container-high) 4px 8px); }
+  @keyframes overPulse { 0%, 100% { filter: none; } 50% { filter: brightness(1.15); } }
+  .dc-val { position: absolute; left: 50%; transform: translate(-50%, -6px); padding: 3px 8px; border-radius: 8px; white-space: nowrap; font-size: 12px; line-height: 16px; font-weight: 700; font-variant-numeric: tabular-nums; background: var(--c-fee); color: #fff; z-index: 2; }
+  .dc-val.over { background: var(--c-over); }
+  .dc-val.minor { background: var(--c-minor); color: #1a1a1a; }
+  .dc-val.zero { background: var(--md-surface-container-high); color: var(--md-on-surface-variant); }
+  .dc-line { position: absolute; left: 4%; right: 4%; height: 2px; margin-top: -1px; background: var(--md-on-surface); border-radius: 1px; z-index: 1; }
+  .dc-line.top { top: 0; }
+  .dc-line span { position: absolute; left: 50%; top: -10px; transform: translateX(-50%); padding: 1px 7px; border-radius: 6px; white-space: nowrap; font-size: 10px; line-height: 18px; font-weight: 700; background: var(--md-inverse-surface); color: var(--md-inverse-on-surface); }
+  .dc-line em { font-style: normal; }
+  .dc-inf { position: absolute; left: 0; right: 0; top: 4px; font-size: 11px; font-weight: 600; color: var(--md-on-surface-variant); }
+  .dc-track { cursor: pointer; border-radius: 10px; outline: none; }
+  .dc-track:focus-visible { box-shadow: 0 0 0 2px var(--focus); }
+  .dc-track:hover .dc-bar, .dc-track.active .dc-bar, .dc-track:focus-visible .dc-bar { filter: brightness(1.12); box-shadow: 0 0 0 2px var(--md-surface-container-lowest), 0 0 0 4px var(--md-outline); }
+  .dash-tip { position: fixed; z-index: 60; width: 240px; padding: 10px 12px; border-radius: 12px; font-size: 12px; line-height: 17px; background: var(--md-inverse-surface); color: var(--md-inverse-on-surface); box-shadow: 0 6px 20px rgb(0 0 0 / .22); pointer-events: none; opacity: 0; transform: translateY(4px); transition: opacity .12s, transform .12s; }
+  .dash-tip.show { opacity: 1; transform: none; }
+  .dash-tip b { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 700; }
+  .dash-tip .r { display: flex; justify-content: space-between; gap: 12px; font-variant-numeric: tabular-nums; }
+  .dash-tip .r.sub { padding-left: 10px; opacity: .8; }
+  .dash-tip .r.tot { margin-top: 4px; padding-top: 4px; border-top: 1px solid rgb(127 127 127 / .45); font-weight: 700; }
+  .dash-tip .r.bad span:last-child { color: #ff8a73; font-weight: 700; }
+  .dash-tip .r.minor span:last-child { color: #ffb547; font-weight: 700; }
+  .dash-tip .r.ok span:last-child { color: #8fd694; font-weight: 700; }
+  .dash-tip em { display: block; margin-top: 6px; font-style: normal; opacity: .8; }
+  @media (prefers-reduced-motion: reduce) { .dash-tip { transition: none; transform: none; } }
+  .dc-label { margin-top: 10px; font-size: 13px; line-height: 18px; font-weight: 600; }
+  .dc-st { font-size: 12px; line-height: 16px; color: var(--md-on-surface-variant); }
+  .dc-st.over { color: var(--md-error); font-weight: 700; }
+  .dc-st.minor { color: var(--warn-fg); font-weight: 700; }
+  .dc-st.ok { color: var(--ok-fg); font-weight: 600; }
+  .dp-foot { margin-top: 16px; padding: 10px 12px; border-radius: var(--shape-m); background: var(--md-surface-container); font-size: 13px; line-height: 18px; font-weight: 600; text-align: center; }
+  .dp-foot.bad { background: var(--md-error-container); color: var(--md-on-error-container); }
+  .dp-foot.good { background: var(--ok-bg); color: var(--ok-fg); }
+  .dp-empty { flex: 1; display: grid; place-items: center; text-align: center; padding: 40px 12px; color: var(--md-on-surface-variant); font-size: 14px; line-height: 20px; }
+  .dash-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin-top: 14px; font-size: 12px; color: var(--md-on-surface-variant); }
+  .dash-legend i { display: inline-block; width: 22px; height: 8px; border-radius: 4px; margin-right: 6px; vertical-align: 1px; }
+  .dash-legend i.in { background: var(--c-fee); }
+  .dash-legend i.over { background: var(--c-over); }
+  .dash-legend i.minor { background: var(--c-minor); }
+  .dash-legend i.night { background: repeating-linear-gradient(-45deg, var(--md-outline-variant) 0 3px, var(--md-surface-container-high) 3px 6px); }
+  .dash-legend i.ln { height: 2px; border-radius: 1px; background: var(--md-on-surface); vertical-align: 3px; }
+  @media (max-width: 760px) {
+    .dash { grid-template-columns: minmax(0, 1fr); }
+    .dc-track { height: 170px; }
+  }
+  @media (max-width: 400px) {
+    .dp { padding: 14px 12px; }
+    .dp.rec { padding: 13px 11px; }
+    .dp-cols { gap: 4px; }
+    .dc-val { font-size: 11px; padding: 2px 5px; }
+    .dc-line span { font-size: 9px; padding: 0 4px; }
+    .dc-line em { display: none; }
+  }
+
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  th, td { text-align: right; padding: 12px 8px; }
+  th:first-child, td:first-child { text-align: left; padding-left: 0; }
+  th:last-child, td:last-child { padding-right: 0; }
+  thead th { font: 500 12px/16px var(--font); letter-spacing: .04em; color: var(--md-on-surface-variant); border-bottom: 1px solid var(--md-outline-variant); }
+  tbody td { border-bottom: 1px solid var(--md-outline-variant); }
+  tfoot td { font-weight: 600; }
+  .pos { color: var(--accent-text); }
+
+  .explain-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .explain-head h2 { margin: 0 !important; }
+  .explain-text { font-size: 16px; line-height: 24px; margin: 0; }
+  .explain-text.placeholder { color: var(--md-on-surface-variant); }
+  .source { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; }
+
+  details summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: ""; width: 8px; height: 8px; border-right: 2px solid var(--md-on-surface-variant); border-bottom: 2px solid var(--md-on-surface-variant); transform: rotate(45deg); transition: transform .2s var(--ease); margin-right: 4px; }
+  details[open] summary::after { transform: rotate(-135deg); }
+  pre { overflow: auto; font: 12px/18px ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--md-surface-container-lowest); padding: 12px; border-radius: var(--shape-s); max-height: 380px; margin: 16px 0 0; }
+
+  .snackbar {
+    position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 24px); opacity: 0; pointer-events: none;
+    background: var(--md-inverse-surface); color: var(--md-inverse-on-surface); border-radius: var(--shape-xs);
+    padding: 14px 16px; min-width: 280px; max-width: min(560px, calc(100vw - 32px));
+    box-shadow: 0 2px 6px 2px rgb(0 0 0 / .15), 0 1px 2px rgb(0 0 0 / .3);
+    transition: opacity .2s var(--ease), transform .2s var(--ease); z-index: 10;
+  }
+  .snackbar.show { opacity: 1; transform: translate(-50%, 0); }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    .side { position: static; }
+  }
+  @media (max-width: 600px) {
+    .stats { grid-template-columns: 1fr 1fr; }
+    .verdict { grid-template-columns: 1fr; }
+    .verdict .badge { grid-row: auto; width: 40px; height: 40px; }
+    .verdict .headline { font-size: 20px; line-height: 28px; }
+    th, td { padding: 10px 4px; }
+  }
+  :root { --ok-bg: #d8f3dc; --ok-fg: #1b5e20; --warn-bg: #fff0c2; --warn-fg: #5c4400; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --ok-bg: #1f3a24; --ok-fg: #9be3a6; --warn-bg: #3d3300; --warn-fg: #ffd86b; }
+  }
+  .fade-in { animation: fadeUp .28s var(--ease); }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .b-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  .b-head h2 { margin: 0; }
+  .b-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .b-actions .btn { height: 36px; }
+  .b-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .b-bar { flex: 1; height: 8px; border-radius: 4px; background: var(--md-surface-container-highest); overflow: hidden; }
+  .b-bar i { display: block; height: 100%; width: 0; background: var(--md-primary); border-radius: 4px; transition: width .3s var(--ease); }
+  .b-bar.done i { background: var(--md-on-surface); }
+  .b-progress span { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .b-table-wrap { overflow-x: auto; margin: 0 -8px; }
+  .b-table { min-width: 640px; }
+  .b-table th:last-child, .b-table td:last-child { width: 1%; padding-left: 0; }
+  .b-go { width: 32px; height: 32px; border-radius: var(--shape-full); display: inline-grid; place-items: center; color: var(--md-on-surface-variant); }
+  .b-row:hover .b-go { background: var(--md-surface-container-highest); color: var(--md-on-surface); }
+  .b-go svg { width: 20px; height: 20px; fill: currentColor; }
+  .b-table th, .b-table td { text-align: right; padding: 12px 8px; vertical-align: middle; }
+  .b-table th:first-child, .b-table td:first-child, .b-table th:nth-child(3), .b-table td:nth-child(3), .b-table th:nth-child(6), .b-table td:nth-child(6) { text-align: left; }
+  .b-table tbody tr.b-row { cursor: pointer; transition: background-color .15s var(--ease); }
+  .b-table tbody tr.b-row:hover, .b-table tbody tr.b-row:focus-visible { background: var(--md-surface-container-high); outline: none; }
+  .b-table tbody tr.b-row.flash { animation: rowFlash 1.2s var(--ease); }
+  @keyframes rowFlash { 0%, 40% { background: var(--md-primary-container); } 100% { background: transparent; } }
+  .b-table tr.b-row.err { cursor: default; background: color-mix(in srgb, var(--md-error-container) 55%, transparent); }
+  .b-table tr.b-row.err td:first-child { box-shadow: inset 3px 0 0 var(--md-error); }
+  .b-sub b { display: block; font-weight: 600; white-space: nowrap; }
+  .b-sub small { display: block; color: var(--md-on-surface-variant); font-size: 12px; }
+  .b-sub small.warn { color: var(--warn-fg); }
+  .b-badge { display: inline-block; padding: 3px 10px; border-radius: var(--shape-full); font-size: 12px; line-height: 18px; font-weight: 600; white-space: nowrap; }
+  .b-badge.ok { background: var(--ok-bg); color: var(--ok-fg); }
+  .b-badge.stay { background: var(--md-secondary-container); color: var(--md-on-secondary-container); }
+  .b-badge.warn { background: var(--warn-bg); color: var(--warn-fg); }
+  .b-badge.err { background: var(--md-error-container); color: var(--md-on-error-container); }
+  .b-badge.wait { background: var(--md-surface-container-highest); color: var(--md-on-surface-variant); }
+  .b-badge.run { background: var(--md-primary-container); color: var(--md-on-primary-container); }
+  .b-more { all: unset; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--accent-text); padding: 6px 8px; border-radius: var(--shape-s); white-space: nowrap; }
+  .b-more:hover { background: var(--md-surface-container-highest); }
+  .b-more:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .b-log td { padding: 0 8px 12px; text-align: left !important; }
+  .b-log pre { margin: 0; padding: 10px 12px; border-radius: var(--shape-s); background: var(--md-error-container); color: var(--md-on-error-container); white-space: pre-wrap; font-size: 12px; }
+  .b-pos { color: var(--accent-text); font-weight: 600; }
+  .b-empty { color: var(--md-on-surface-variant); }
+  .detail-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .detail-bar .spacer { flex: 1; }
+  .detail-bar .btn.text { padding: 0 12px 0 8px; margin-left: -8px; color: var(--md-on-surface); }
+  .icon-btn { all: unset; cursor: pointer; width: 40px; height: 40px; border-radius: var(--shape-full); display: grid; place-items: center; color: var(--md-on-surface-variant); }
+  .icon-btn:hover { background: var(--md-surface-container-high); color: var(--md-on-surface); }
+  .icon-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .icon-btn[disabled] { opacity: .38; pointer-events: none; }
+  .icon-btn svg { width: 22px; height: 22px; fill: currentColor; }
+  .sample-all { margin-top: 10px; width: 100%; }
+  .dlg { border: none; border-radius: var(--shape-xl); padding: 24px; width: min(440px, calc(100% - 32px)); background: var(--md-surface-container-high); color: var(--md-on-surface); box-shadow: 0 12px 32px rgb(0 0 0 / .25); }
+  .dlg[open] { animation: fadeUp .22s var(--ease); }
+  .dlg::backdrop { background: rgb(0 0 0 / .4); }
+  .dlg h2 { margin: 0 0 8px; font-size: 22px; line-height: 28px; font-weight: 500; }
+  .dlg p { margin: 0 0 16px; color: var(--md-on-surface-variant); font-size: 14px; line-height: 20px; }
+  .dlg .field select { background: var(--md-surface-container-high); }
+  .dlg-err { min-height: 16px; margin-top: 8px; color: var(--md-error); font-size: 12px; line-height: 16px; }
+  .dlg-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+  .dlg-actions .btn.filled { width: auto; padding: 0 24px; }
+  .b-sub small.tar { color: var(--md-on-surface-variant); }
+  .b-sub small.tar.need { color: var(--warn-fg); font-weight: 600; }
+  .tariff-chip { height: 36px; }
+
+  .u-wrap { overflow-x: auto; margin: 0 -8px; }
+  .u-months { min-width: 560px; }
+  .u-months td small { display: block; font-size: 11px; color: var(--md-on-surface-variant); }
+  .u-months .over { color: var(--md-error); font-weight: 600; }
+
+
+  .layout > section, #result, #batch { min-width: 0; }
+  .sum { margin-top: 16px; border-radius: var(--shape-l); padding: 16px 18px; display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; align-items: center; }
+  .sum .k { grid-column: 1 / -1; font-size: 11px; line-height: 16px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; opacity: .75; }
+  .sum .t { font-size: 18px; line-height: 24px; font-weight: 600; }
+  .sum .big { font-size: 24px; line-height: 30px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+  .sum .big small { font-size: 13px; font-weight: 400; opacity: .8; }
+  .sum .s { grid-column: 1 / -1; font-size: 13px; line-height: 18px; opacity: .9; }
+  .sum.good { background: var(--md-tertiary-container); color: var(--md-on-tertiary-container); }
+  .sum.warn { background: var(--md-secondary-container); color: var(--md-on-secondary-container); }
+  @media (max-width: 600px) {
+    .sum { grid-template-columns: 1fr; }
+    .sum .big { text-align: left; }
+  }
+
+  .appbar .btn.text { margin-left: auto; color: var(--md-on-surface); }
+  body.ob-open { overflow: hidden; }
+  .ob-scrim {
+    position: fixed; inset: 0; z-index: 30; background: var(--md-surface);
+    opacity: 0; transition: opacity .35s var(--ease);
+  }
+  .ob-scrim.show { opacity: 1; }
+  .ob-scrim[hidden], html.ob-seen .ob-scrim { display: none; }
+  .ob-card {
+    width: 100%; height: 100dvh; display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(360px, 1fr);
+    background: var(--md-surface); color: var(--md-on-surface);
+  }
+  .ob-stage {
+    background: var(--md-surface-container); padding: 48px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 14px; min-width: 0;
+  }
+  .ob-screen {
+    position: relative; width: min(100%, calc((100dvh - 140px) * 640 / 420)); aspect-ratio: 640 / 420; overflow: hidden; border-radius: var(--shape-m);
+    border: 1px solid var(--md-outline-variant); box-shadow: 0 8px 24px rgb(0 0 0 / .12); background: var(--md-surface);
+  }
+  .ob-note { text-align: center; font-size: 12px; line-height: 16px; color: var(--md-on-surface-variant); }
+  .ob-side { display: flex; flex-direction: column; padding: 32px 48px 40px; min-height: 0; overflow-y: auto; }
+  .ob-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; }
+  .ob-brand .logo { width: 36px; height: 36px; }
+  .ob-brand b { display: block; font-size: 16px; line-height: 22px; font-weight: 600; }
+  .ob-brand span { font-size: 13px; color: var(--md-on-surface-variant); }
+  .ob-side .ob-text { flex: 1; display: flex; flex-direction: column; justify-content: center; max-width: 440px; padding-top: 0; }
+  .ob-side .ob-text h2 { font-size: 30px; line-height: 38px; }
+  .ob-side .ob-text p { font-size: 16px; line-height: 24px; }
+  .ob-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .ob-dots { display: flex; align-items: center; gap: 8px; }
+  .ob-dots button {
+    all: unset; cursor: pointer; width: 8px; height: 8px; border-radius: 4px; background: var(--md-outline-variant);
+    transition: width .3s cubic-bezier(.16, 1, .3, 1), background-color .3s;
+  }
+  .ob-dots button.done { background: var(--md-on-surface-variant); }
+  .ob-dots button.on { width: 24px; background: var(--md-primary); }
+  .ob-dots button:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+  .ob-skip, .ob-back {
+    all: unset; cursor: pointer; height: 36px; padding: 0 14px; border-radius: var(--shape-full);
+    font: 500 14px/36px var(--font); color: var(--md-on-surface-variant);
+  }
+  .ob-back { margin-left: -14px; }
+  .ob-skip:hover, .ob-back:hover { background: var(--md-surface-container-high); color: var(--md-on-surface); }
+  .ob-back[hidden] { display: inline-block; visibility: hidden; }
+  .ob-text { flex: 1; padding-top: 28px; transition: opacity .3s var(--ease), transform .3s var(--ease); }
+  .ob-text.swap { opacity: 0; transform: translateY(6px); }
+  .ob-kicker { font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-text); }
+  .ob-text h2 { margin: 6px 0 10px; font-size: 24px; line-height: 30px; font-weight: 600; letter-spacing: -.01em; }
+  .ob-text p { margin: 0; font-size: 15px; line-height: 22px; color: var(--md-on-surface-variant); }
+  .ob-ref { margin-top: 16px; display: grid; gap: 8px; }
+  .ob-ref div { font-size: 13px; line-height: 18px; color: var(--md-on-surface-variant); }
+  .ob-chip {
+    display: inline-block; margin-right: 6px; padding: 3px 10px; border-radius: var(--shape-full);
+    background: var(--md-surface-container-high); color: var(--md-on-surface); font-size: 12px; font-weight: 500; white-space: nowrap;
+  }
+  .ob-chip.y { background: var(--md-primary); color: var(--md-on-primary); }
+  .ob-actions { display: flex; align-items: center; gap: 8px; padding-top: 20px; }
+  .ob-replay {
+    all: unset; cursor: pointer; width: 40px; height: 40px; border-radius: var(--shape-full); display: grid; place-items: center;
+    color: var(--md-on-surface-variant); margin-left: auto;
+  }
+  .ob-replay:hover { background: var(--md-surface-container-high); color: var(--md-on-surface); }
+  .ob-replay svg { width: 20px; height: 20px; fill: currentColor; }
+  .ob-cta {
+    all: unset; cursor: pointer; box-sizing: border-box; height: 48px; padding: 0 24px; border-radius: var(--shape-full);
+    background: var(--md-primary); color: var(--md-on-primary); font: 600 15px/48px var(--font); white-space: nowrap;
+    transition: box-shadow .15s var(--ease);
+  }
+  .ob-cta:hover { box-shadow: 0 2px 8px rgb(0 0 0 / .18); }
+  .ob-cta:active, .ob-skip:active, .ob-back:active, .ob-replay:active { transform: scale(.98); }
+  .ob-skip:focus-visible, .ob-back:focus-visible, .ob-replay:focus-visible, .ob-cta:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  .m-app {
+    position: absolute; left: 0; top: 0; width: 640px; height: 420px; transform-origin: 0 0; overflow: hidden;
+    background: var(--md-surface); color: var(--md-on-surface); font: 400 12px/16px var(--font); user-select: none;
+  }
+  .m-instant, .m-instant * { transition: none !important; }
+  .m-bar { height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 14px; font-size: 13px; font-weight: 500; }
+  .m-logo { width: 22px; height: 22px; border-radius: 6px; background: var(--md-primary); }
+  .m-help { margin-left: auto; font-size: 11px; color: var(--md-on-surface-variant); }
+  .m-prog { height: 3px; overflow: hidden; }
+  .m-prog.on { background: var(--md-primary-container); }
+  .m-prog.on::after { content: ""; display: block; height: 100%; width: 40%; background: var(--md-primary); animation: indet 1s var(--ease) infinite; }
+  .m-body { display: grid; grid-template-columns: 214px 1fr; gap: 12px; padding: 9px 12px 12px; height: 377px; }
+  .m-form { background: var(--md-surface-container-low); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 9px; }
+  .m-h { font-size: 13px; font-weight: 500; }
+  .m-seg { display: grid; grid-template-columns: 1fr 1fr; height: 28px; border: 1px solid var(--md-outline); border-radius: 999px; overflow: hidden; }
+  .m-seg span { display: grid; place-items: center; font-size: 11px; font-weight: 500; transition: background-color .25s; }
+  .m-seg span + span { border-left: 1px solid var(--md-outline); }
+  .m-seg span.on { background: var(--md-primary); color: var(--md-on-primary); }
+  .m-drop {
+    height: 92px; border: 1.5px dashed var(--md-outline); border-radius: 10px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 3px; text-align: center; padding: 0 8px; color: var(--md-on-surface-variant);
+    transition: background-color .2s, border-color .2s;
+  }
+  .m-drop svg { width: 22px; height: 22px; fill: currentColor; }
+  .m-drop b { font-size: 11.5px; font-weight: 500; color: var(--md-on-surface); }
+  .m-drop small { font-size: 10px; line-height: 13px; }
+  .m-drop.over { border-style: solid; border-color: var(--md-on-surface); background: var(--md-primary-container); color: var(--md-on-primary-container); }
+  .m-drop.has-file { border-style: solid; border-color: var(--md-outline-variant); background: var(--md-surface-container-lowest); }
+  .m-form.sample .m-drop, .m-form:not(.sample) .m-sample { display: none; }
+  .m-field {
+    position: relative; height: 40px; border: 1px solid var(--md-outline); border-radius: 4px; padding: 0 24px 0 10px;
+    display: flex; flex-direction: column; justify-content: center; transition: border-color .15s;
+  }
+  .m-field::after { content: ""; position: absolute; right: 10px; top: 17px; border: 4px solid transparent; border-top-color: var(--md-on-surface-variant); }
+  .m-field small { font-size: 9.5px; line-height: 12px; color: var(--md-on-surface-variant); }
+  .m-field span { font-size: 12px; }
+  .m-field.focus { border: 2px solid var(--md-on-surface); padding-left: 9px; }
+  .m-hint { margin-top: -5px; padding: 1px 10px; font-size: 10px; line-height: 14px; color: var(--md-on-surface-variant); border-radius: 4px; transition: background-color .3s, color .3s; }
+  .m-hint.flash { background: var(--md-primary-container); color: var(--md-on-primary-container); }
+  .m-go {
+    margin-top: auto; height: 36px; border-radius: 999px; background: var(--md-primary); color: var(--md-on-primary);
+    display: grid; place-items: center; font-size: 12px; font-weight: 600; transition: transform .12s, box-shadow .12s;
+  }
+  .m-go.press { transform: scale(.96); box-shadow: inset 0 0 0 99px rgb(0 0 0 / .1); }
+  .m-res { position: relative; overflow: hidden; border-radius: 10px; }
+  .m-empty {
+    position: absolute; inset: 0; border: 1px solid var(--md-outline-variant); border-radius: 10px; padding: 24px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center;
+    color: var(--md-on-surface-variant); font-size: 11px; transition: opacity .3s;
+  }
+  .m-empty b { color: var(--md-on-surface); font-size: 13px; font-weight: 500; }
+  .m-empty.gone { opacity: 0; }
+  .m-scroll { position: relative; transition: transform .6s cubic-bezier(.45, 0, .2, 1); }
+  .m-result { display: flex; flex-direction: column; gap: 8px; opacity: 0; transform: translateY(10px); transition: opacity .45s, transform .45s cubic-bezier(.16, 1, .3, 1); }
+  .m-result.show { opacity: 1; transform: none; }
+  .m-verdict {
+    border-radius: 12px; padding: 12px; display: grid; grid-template-columns: auto 1fr; gap: 1px 10px;
+    background: var(--md-primary-container); color: var(--md-on-primary-container);
+  }
+  .m-badge { grid-row: span 3; width: 34px; height: 34px; border-radius: 50%; background: var(--md-primary); color: var(--md-on-primary); display: grid; place-items: center; }
+  .m-badge svg { width: 18px; height: 18px; fill: currentColor; }
+  .m-verdict small { font-size: 9.5px; opacity: .8; }
+  .m-verdict b { font-size: 17px; line-height: 22px; font-weight: 500; }
+  .m-verdict span { font-size: 10px; line-height: 14px; opacity: .9; }
+  .m-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .m-stat { background: var(--md-surface-container); border-radius: 8px; padding: 7px 9px; }
+  .m-stat small { display: block; font-size: 9px; line-height: 12px; color: var(--md-on-surface-variant); }
+  .m-stat b { font-size: 15px; line-height: 20px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .m-stat i { font-style: normal; font-size: 10px; opacity: .7; margin-left: 2px; }
+  .m-stat.accent { background: var(--md-tertiary-container); color: var(--md-on-tertiary-container); }
+  .m-stat.accent small { color: inherit; opacity: .8; }
+  .m-card { background: var(--md-surface-container-low); border-radius: 10px; padding: 10px 12px; }
+  .m-card h4 { margin: 0 0 6px; font-size: 12px; font-weight: 500; }
+  .m-legend { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 9px; color: var(--md-on-surface-variant); margin-bottom: 4px; }
+  .m-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 3px; vertical-align: -1px; }
+  .m-dash { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .md-p { background: var(--md-surface-container-lowest); border: 1px solid var(--md-outline-variant); border-radius: 8px; padding: 6px 6px 5px; min-width: 0; }
+  .md-p.rec { border: 1.5px solid var(--md-primary); }
+  .md-tag { display: inline-block; padding: 1px 5px; border-radius: 4px; font-size: 7px; line-height: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; background: var(--md-surface-container-high); color: var(--md-on-surface-variant); }
+  .md-tag.bad { background: var(--md-error-container); color: var(--md-on-error-container); }
+  .md-tag.rec { background: var(--md-primary); color: var(--md-on-primary); }
+  .md-p b.md-t { display: block; margin: 3px 0 0; font-size: 10px; line-height: 13px; font-weight: 600; }
+  .md-cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 4px; }
+  .md-col { display: flex; flex-direction: column; align-items: center; border-radius: 4px; padding-top: 12px; transition: background-color .15s; }
+  .md-col.hover { background: var(--md-surface-container-high); }
+  .md-track { position: relative; width: 100%; height: 58px; }
+  .md-bar { position: absolute; left: 50%; bottom: 0; width: 55%; transform: translateX(-50%); border-radius: 3px; overflow: hidden; display: flex; flex-direction: column-reverse; height: var(--h); transition: height .8s cubic-bezier(.16, 1, .3, 1); }
+  .m-dash.zero .md-bar { height: 0; }
+  .md-bar i { display: block; flex: none; }
+  .md-val { position: absolute; left: 50%; transform: translate(-50%, -2px); bottom: var(--h); font-size: 7px; line-height: 10px; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; transition: bottom .8s cubic-bezier(.16, 1, .3, 1), opacity .3s; }
+  .m-dash.zero .md-val { bottom: 0; opacity: 0; }
+  .md-val.over { color: var(--md-error); } .md-val.minor { color: var(--warn-fg); }
+  .md-line { position: absolute; left: 6%; right: 6%; height: 1.5px; background: var(--md-on-surface); border-radius: 1px; }
+  .md-line.top::after { content: '↑'; position: absolute; right: -2px; top: -9px; font-size: 7px; }
+  .md-lbl { margin-top: 3px; font-size: 7.5px; line-height: 10px; font-weight: 600; }
+  .md-st { font-size: 6.5px; line-height: 9px; color: var(--md-on-surface-variant); white-space: nowrap; }
+  .md-st.over { color: var(--md-error); font-weight: 700; } .md-st.minor { color: var(--warn-fg); font-weight: 700; } .md-st.ok { color: var(--ok-fg); font-weight: 600; }
+  .md-foot { margin-top: 4px; padding: 3px 4px; border-radius: 4px; font-size: 7.5px; line-height: 10px; font-weight: 600; text-align: center; background: var(--md-surface-container); }
+  .md-foot.bad { background: var(--md-error-container); color: var(--md-on-error-container); }
+  .md-foot.good { background: var(--ok-bg); color: var(--ok-fg); }
+  .s-in { background: var(--c-fee); } .s-minor { background: var(--c-minor); }
+  .s-rec { background: var(--md-primary); } .s-fee { background: var(--c-fee); } .s-add { background: var(--c-addons); } .s-over { background: var(--c-over); } .s-roam { background: var(--c-roam); }
+  .m-explain-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .m-explain-head h4 { margin: 0; }
+  .m-tonal { height: 28px; padding: 0 12px; border-radius: 999px; background: var(--md-secondary-container); color: var(--md-on-secondary-container); display: grid; place-items: center; font-size: 11px; font-weight: 500; transition: transform .12s; }
+  .m-tonal.press { transform: scale(.94); }
+  .m-explain-t { margin: 0; min-height: 80px; font-size: 11px; line-height: 16px; }
+  .m-explain-t.placeholder { color: var(--md-on-surface-variant); }
+  .m-src { font-size: 9.5px; color: var(--md-on-surface-variant); margin-top: 4px; opacity: 0; transition: opacity .3s; }
+  .m-src.show { opacity: 1; }
+  .m-menu {
+    position: absolute; z-index: 3; width: 190px; padding: 4px 0; border-radius: 6px; background: var(--md-surface-container-high);
+    box-shadow: 0 6px 18px rgb(0 0 0 / .2); opacity: 0; transform: scaleY(.85); transform-origin: top; transition: opacity .18s, transform .18s;
+  }
+  .m-menu.open { opacity: 1; transform: none; }
+  .m-menu div { padding: 5px 12px; font-size: 11.5px; }
+  .m-menu div.hover { background: var(--md-surface-container-highest); }
+  .m-menu div.sel { font-weight: 600; }
+  .m-tip {
+    position: absolute; z-index: 3; width: 176px; padding: 8px 10px; border-radius: 8px; font-size: 10.5px; line-height: 15px;
+    background: var(--md-inverse-surface); color: var(--md-inverse-on-surface); opacity: 0; transition: opacity .2s; pointer-events: none;
+  }
+  .m-tip.show { opacity: 1; }
+  .m-tip b { display: block; margin-bottom: 3px; font-weight: 600; }
+  .m-tip div { display: flex; justify-content: space-between; gap: 8px; }
+  .m-tip em { font-style: normal; display: block; margin-top: 4px; opacity: .75; }
+  .m-file {
+    position: absolute; left: 0; top: 0; z-index: 4; display: flex; align-items: center; gap: 6px; padding: 6px 10px 6px 8px;
+    border-radius: 8px; background: var(--md-surface-container-lowest); border: 1px solid var(--md-outline-variant);
+    font-size: 11px; font-weight: 500; box-shadow: 0 2px 6px rgb(0 0 0 / .15); opacity: 0;
+    transition: transform .9s cubic-bezier(.45, 0, .2, 1), opacity .25s, box-shadow .2s;
+  }
+  .m-file svg { width: 16px; height: 16px; fill: var(--c-roam); }
+  .m-file.show { opacity: 1; }
+  .m-file.drag { box-shadow: 0 10px 24px rgb(0 0 0 / .25); }
+  .m-cursor {
+    position: absolute; left: 0; top: 0; z-index: 6; width: 20px; height: 20px; pointer-events: none;
+    transition: transform .65s cubic-bezier(.45, 0, .2, 1);
+  }
+  .m-cursor svg { width: 20px; height: 20px; filter: drop-shadow(0 1px 2px rgb(0 0 0 / .4)); transition: transform .12s; transform-origin: 3px 2px; }
+  .m-cursor.down svg { transform: scale(.82); }
+  .m-ripple { position: absolute; z-index: 5; width: 36px; height: 36px; margin: -18px 0 0 -18px; border-radius: 50%; background: var(--md-on-surface); opacity: 0; pointer-events: none; }
+  .m-ripple.go { animation: mRip .5s ease-out; }
+  @keyframes mRip { from { transform: scale(.2); opacity: .3; } to { transform: scale(1.2); opacity: 0; } }
+
+  @media (max-width: 760px) {
+    .ob-card { grid-template-columns: 1fr; grid-template-rows: auto 1fr; overflow-y: auto; }
+    .ob-stage { padding: 16px; order: 2; }
+    .ob-screen { width: 100%; }
+    .ob-side { padding: 16px 20px 20px; overflow: visible; display: contents; }
+    .ob-brand { order: 1; margin: 0; padding: 16px 20px 12px; }
+    .ob-top { order: 3; padding: 16px 20px 0; }
+    .ob-side .ob-text { order: 4; padding: 12px 20px 0; justify-content: flex-start; }
+    .ob-side .ob-text h2 { font-size: 22px; line-height: 28px; }
+    .ob-side .ob-text p { font-size: 14px; line-height: 20px; }
+    .ob-actions { order: 5; padding: 20px 20px 24px; }
+    .ob-card { grid-template-rows: none; display: flex; flex-direction: column; }
+    .ob-cta { padding: 0 18px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .m-cursor, .m-ripple { display: none; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<header class="appbar" id="appbar">
+  <div class="appbar-inner">
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M17 1H7a2 2 0 0 0-2 2v18a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm0 18H7V5h10v14Zm-7-9h1.5v6H10v-6Zm2.75-2h1.5v8h-1.5V8Z"/></svg>
+    </div>
+    <div>
+      <h1 class="title-l">Калькулятор тарифа</h1>
+      <div class="body-s">Подбор тарифа по детализации за 3 месяца</div>
+    </div>
+    <button class="btn text" type="button" id="openOnboarding">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2Zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8Zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4Z"/></svg>
+      Как это работает
+    </button>
+  </div>
+  <div class="progress" id="progress"></div>
+</header>
+
+<main>
+  <div class="layout">
+    <aside class="side">
+      <form class="card filled stack" id="form" novalidate>
+        <h2 class="title-m">Данные абонента</h2>
+
+        <div class="segmented" role="group" aria-label="Источник данных">
+          <button type="button" id="modeFile" aria-pressed="true">
+            <svg class="ic" viewBox="0 0 24 24"><path d="m9 16.2-4.2-4.2-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>Свой файл
+          </button>
+          <button type="button" id="modeSample" aria-pressed="false">
+            <svg class="ic" viewBox="0 0 24 24"><path d="m9 16.2-4.2-4.2-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>Пример
+          </button>
+        </div>
+
+        <div id="fileBox">
+          <div class="drop" id="drop" tabindex="0" role="button" aria-label="Выбрать один или несколько CSV-файлов детализации">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96ZM14 13v4h-4v-4H7l5-5 5 5h-3Z"/></svg>
+            <div class="label-l" id="dropTitle">Перетащите один или несколько usage_&lt;id&gt;.csv</div>
+            <div class="body-s" id="dropHint">или нажмите, чтобы выбрать · можно сразу несколько файлов</div>
+            <input type="file" id="file" accept=".csv,text/csv" multiple class="hidden">
+          </div>
+        </div>
+
+        <div id="sampleBox" class="hidden">
+          <div class="field">
+            <select id="sample"><option value="">Не выбран</option></select>
+            <label for="sample">Файл из папки data</label>
+          </div>
+          <button type="button" class="btn tonal sample-all" id="sampleAll">Рассчитать все примеры</button>
+        </div>
+
+        <div class="field" id="currentField">
+          <select id="current"><option value="">Определить по данным</option></select>
+          <label for="current">Текущий тариф</label>
+          <div class="support body-s" id="currentHint">Колонка tariff в CSV или subscribers.json</div>
+        </div>
+
+        <button type="submit" class="btn filled" id="go">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2ZM9 17H7v-7h2v7Zm4 0h-2V7h2v10Zm4 0h-2v-4h2v4Z"/></svg>
+          <span id="goLabel">Подобрать тариф</span>
+        </button>
+        <div class="body-s" id="status" role="status"></div>
+      </form>
+    </aside>
+
+    <section aria-live="polite">
+      <div id="empty" class="card outlined empty">
+        <div class="illus" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+        </div>
+        <div class="title-m">Здесь появится сравнение тарифов</div>
+        <p class="muted">Калькулятор посчитает каждый месяц на всех тарифах с доппакетами и скажет, стоит ли менять тариф с учётом 50 сом за переход.</p>
+        <div class="steps">
+          <span class="chip"><b>1</b> Загрузите детализацию</span>
+          <span class="chip"><b>2</b> Укажите тариф</span>
+          <span class="chip"><b>3</b> Получите рекомендацию</span>
+        </div>
+      </div>
+
+      <div id="batch" class="stack hidden">
+        <div class="card filled">
+          <div class="b-head">
+            <div>
+              <h2 class="title-m">Пакетный расчёт</h2>
+              <div class="body-s" id="batchSource"></div>
+            </div>
+            <div class="b-actions">
+              <button type="button" class="btn tonal" id="exportJson" disabled>Экспорт JSON</button>
+              <button type="button" class="btn tonal" id="exportCsv" disabled>Экспорт CSV</button>
+              <button type="button" class="btn text" id="batchNew">Новый расчёт</button>
+            </div>
+          </div>
+          <div class="b-progress"><div class="b-bar" role="progressbar" aria-label="Прогресс расчёта"><i id="batchBar"></i></div><span class="body-s" id="batchProgress"></span></div>
+          <div class="stats" id="batchKpis"></div>
+        </div>
+        <div class="card filled">
+          <h2 class="title-m">Все абоненты</h2>
+          <p class="body-s" style="margin:-10px 0 12px">Нажмите на строку — откроется полный расчёт абонента: сравнение потребления, месяцы и объяснение.</p>
+          <div class="b-table-wrap"><table class="b-table" id="batchTable"></table></div>
+        </div>
+      </div>
+
+      <div id="result" class="stack hidden">
+        <div class="detail-bar hidden" id="detailBar">
+          <button type="button" class="btn text" id="backToBatch">
+            <svg class="ic" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2Z"/></svg>
+            Назад ко всем абонентам
+          </button>
+          <button type="button" class="btn tonal tariff-chip" id="changeTariff"></button>
+          <span class="spacer"></span>
+          <span class="body-s" id="detailPos"></span>
+          <button type="button" class="icon-btn" id="prevSub" aria-label="Предыдущий абонент"><svg viewBox="0 0 24 24"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+          <button type="button" class="icon-btn" id="nextSub" aria-label="Следующий абонент"><svg viewBox="0 0 24 24"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+        </div>
+        <div class="verdict" id="verdict"></div>
+        <div class="stats" id="stats"></div>
+
+        <div class="card filled" id="dashCard">
+          <h2 class="title-m">Сравнение потребления: текущий тариф и рекомендуемый</h2>
+          <p class="body-s" style="margin:-10px 0 14px">Столбик — сколько абонент тратит в среднем за месяц, чёрная линия — сколько входит в тариф. Всё, что выше линии, — перерасход: он оплачивается отдельно. Наведите на столбик или нажмите на него — покажем подробности.</p>
+          <div class="dash" id="dash"></div>
+          <div class="dash-legend">
+            <span><i class="in"></i>Входит в тариф</span>
+            <span><i class="over"></i>Перерасход</span>
+            <span><i class="minor"></i>Небольшой перерасход (до 25% лимита)</span>
+            <span><i class="night"></i>Ночью — бесплатно</span>
+            <span><i class="ln"></i>Лимит тарифа</span>
+          </div>
+          <div class="dash-tip" id="dashTip" role="tooltip"></div>
+          <div id="summary" aria-live="polite"></div>
+        </div>
+
+        <div class="card filled" id="usageMonthsCard">
+          <h2 class="title-m">Потребление по месяцам</h2>
+          <div class="u-wrap"><table class="u-months" id="usageMonths"></table></div>
+        </div>
+
+        <div class="card filled">
+          <h2 class="title-m">Стоимость по месяцам</h2>
+          <table id="months"></table>
+        </div>
+
+
+        <div class="card outlined">
+          <div class="explain-head">
+            <h2 class="title-m">Объяснение для абонента</h2>
+            <button type="button" class="btn tonal" id="explainBtn">
+              <svg class="ic" viewBox="0 0 24 24"><path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Zm-2 12H6v-2h12v2Zm0-3H6V9h12v2Zm0-3H6V6h12v2Z"/></svg>
+              Объяснить
+            </button>
+          </div>
+          <p id="explain" class="explain-text placeholder">Короткий текст простыми словами: что выгоднее и почему. Цифры берутся из расчёта.</p>
+          <div class="body-s source hidden" id="explainSrc"></div>
+        </div>
+
+        <details class="card filled">
+          <summary class="title-m">Ответ recommend() в JSON</summary>
+          <pre id="raw"></pre>
+        </details>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="snackbar" id="snackbar" role="alert"></div>
+
+<dialog class="dlg" id="tariffDlg" aria-labelledby="dlgTitle">
+  <form method="dialog" id="tariffForm">
+    <h2 id="dlgTitle">Текущий тариф</h2>
+    <p id="dlgText"></p>
+    <div class="field">
+      <select id="dlgTariff"></select>
+      <label for="dlgTariff">Тариф абонента сейчас</label>
+    </div>
+    <div class="dlg-err" id="dlgErr" role="alert"></div>
+    <div class="dlg-actions">
+      <button type="button" class="btn text" id="dlgCancel">Отмена</button>
+      <button type="submit" class="btn filled" id="dlgOk">Рассчитать</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="ob-scrim show" id="onboarding">
+  <div class="ob-card" role="dialog" aria-modal="true" aria-labelledby="obTitle" id="obCard">
+    <div class="ob-stage">
+      <div class="ob-screen" id="obScreen" aria-hidden="true">
+        <div class="m-app" id="mApp">
+          <div class="m-bar"><span class="m-logo"></span>Калькулятор тарифа<span class="m-help">Как это работает</span></div>
+          <div class="m-prog" id="mProg"></div>
+          <div class="m-body">
+            <div class="m-form" id="mForm">
+              <div class="m-h">Данные абонента</div>
+              <div class="m-seg"><span id="mSegFile" class="on">Свой файл</span><span id="mSegSample">Пример</span></div>
+              <div class="m-drop" id="mDrop">
+                <svg viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96ZM14 13v4h-4v-4H7l5-5 5 5h-3Z"/></svg>
+                <b id="mDropT">Перетащите usage_&lt;id&gt;.csv</b>
+                <small id="mDropS">или нажмите, чтобы выбрать</small>
+              </div>
+              <div class="m-field m-sample" id="mSample"><small>Файл из папки data</small><span>usage_P01.csv</span></div>
+              <div class="m-field" id="mSel"><small>Текущий тариф</small><span>Определить по данным</span></div>
+              <div class="m-hint" id="mHint">Колонка tariff в CSV или subscribers.json</div>
+              <div class="m-go" id="mGo">Подобрать тариф</div>
+            </div>
+            <div class="m-res">
+              <div class="m-empty" id="mEmpty">
+                <b>Здесь появится сравнение тарифов</b>
+                1 Загрузите детализацию · 2 Укажите тариф · 3 Получите рекомендацию
+              </div>
+              <div class="m-scroll" id="mScroll">
+                <div class="m-result" id="mResult">
+                  <div class="m-verdict">
+                    <div class="m-badge"><svg viewBox="0 0 24 24"><path d="M6.99 11 3 15l3.99 4v-3H14v-2H6.99v-3ZM21 9l-3.99-4v3H10v2h7.01v3L21 9Z"/></svg></div>
+                    <small>Абонент P03 · 3 мес.</small>
+                    <b>Перейти на «Комфорт»</b>
+                    <span>Дешевле на 750 сом/мес; плата за переход 50 сом окупается за 3 мес.</span>
+                  </div>
+                  <div class="m-stats">
+                    <div class="m-stat"><small>Сейчас в месяц</small><b data-v="1170">1 170</b><i>сом</i></div>
+                    <div class="m-stat"><small>Будет в месяц</small><b data-v="420">420</b><i>сом</i></div>
+                    <div class="m-stat accent"><small>Экономия в месяц</small><b data-v="750">750</b><i>сом</i></div>
+                    <div class="m-stat"><small>Выгода за 3 мес.</small><b data-v="2200">2 200</b><i>сом</i></div>
+                  </div>
+                  <div class="m-card" id="mChart">
+                    <h4>Сравнение потребления</h4>
+                    <div class="m-dash zero" id="mDash"></div>
+                    <div class="m-legend" style="margin:5px 0 0">
+                      <span><i class="s-in"></i>В пакете</span><span><i class="s-minor"></i>Немного сверх</span><span><i class="s-over"></i>Сильно сверх</span>
+                      <span><i style="background:var(--md-on-surface);height:2px;vertical-align:2px"></i>Лимит</span>
+                    </div>
+                  </div>
+                  <div class="m-card" id="mExplain">
+                    <div class="m-explain-head"><h4>Объяснение для абонента</h4><div class="m-tonal" id="mExplainBtn">Объяснить</div></div>
+                    <p class="m-explain-t placeholder" id="mExplainT"></p>
+                    <div class="m-src" id="mSrc">Текст по шаблону · с ключом API пишет Claude</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="m-menu" id="mMenu">
+            <div class="sel">Определить по данным</div><div>Старт</div><div>Комфорт</div><div>Ночной</div><div>Онлайн</div><div>Максимум</div>
+          </div>
+          <div class="m-tip" id="mTip"></div>
+          <div class="m-file" id="mFile"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Zm-1 7V3.5L18.5 9H13Z"/></svg>usage_P03.csv</div>
+          <div class="m-ripple" id="mRipple"></div>
+          <div class="m-cursor" id="mCursor"><svg viewBox="0 0 24 24"><path d="M4 2.5v17.2l4.7-4.4 3 6.9 3.1-1.3-3-6.8h6.6Z" fill="#fff" stroke="#000" stroke-width="1.4" stroke-linejoin="round"/></svg></div>
+        </div>
+      </div>
+      <div class="ob-note">Пример расчёта: абонент P03 из данных организаторов</div>
+    </div>
+
+    <div class="ob-side">
+      <div class="ob-brand">
+        <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17 1H7a2 2 0 0 0-2 2v18a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm0 18H7V5h10v14Zm-7-9h1.5v6H10v-6Zm2.75-2h1.5v8h-1.5V8Z"/></svg></div>
+        <div><b>Калькулятор тарифа</b><span>Как пользоваться сайтом</span></div>
+      </div>
+      <div class="ob-top">
+        <div class="ob-dots" id="obDots" aria-label="Шаги"></div>
+        <button class="ob-skip" type="button" id="obSkip">Пропустить</button>
+      </div>
+      <div class="ob-text" id="obText" aria-live="polite">
+        <div class="ob-kicker" id="obKicker"></div>
+        <h2 id="obTitle"></h2>
+        <p id="obLead"></p>
+        <div class="ob-ref" id="obRef"></div>
+      </div>
+      <div class="ob-actions">
+        <button class="ob-back" type="button" id="obBack" hidden>← Назад</button>
+        <button class="ob-replay" type="button" id="obReplay" aria-label="Показать шаг ещё раз" title="Показать ещё раз">
+          <svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8Z"/></svg>
+        </button>
+        <button class="ob-cta" type="button" id="obNext">Далее →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => Number(n).toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function askCurrentTariff() {
+  snackbar('В файле не указан текущий тариф — выберите его в списке «Текущий тариф».');
+  $('currentField').classList.add('attention');
+  $('currentHint').textContent = 'Выберите тариф, на котором абонент сейчас — без него не посчитать экономию';
+  $('current').focus();
+}
+function clearTariffAttention() {
+  $('currentField').classList.remove('attention');
+  $('currentHint').textContent = 'Колонка tariff в CSV или subscribers.json';
+}
+$('current').addEventListener('change', () => {
+  const needRecalc = $('currentField').classList.contains('attention') || (lastResult && lastResult.recommendation === 'best');
+  if (needRecalc && $('current').value) {
+    clearTariffAttention();
+    $('form').requestSubmit();
+  }
+});
+
+async function api(url, opts) {
+  try {
+    return await fetch(url, opts);
+  } catch (e) {
+    await new Promise((r) => setTimeout(r, 400));
+    try {
+      return await fetch(url, opts);
+    } catch (e2) {
+      throw new Error('Нет связи с сервером. Проверьте, что он запущен, и попробуйте ещё раз.');
+    }
+  }
+}
+const ICON_SWITCH = '<svg viewBox="0 0 24 24"><path d="M6.99 11 3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg>';
+const ICON_STAY = '<svg viewBox="0 0 24 24"><path d="m9 16.2-4.2-4.2-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+let pickedFiles = [];
+let tariffNames = {};
+let mode = 'file';
+let lastResult = null;
+
+window.addEventListener('scroll', () => $('appbar').classList.toggle('scrolled', window.scrollY > 4), { passive: true });
+
+let snackTimer;
+function snackbar(text) {
+  const s = $('snackbar');
+  s.textContent = text;
+  s.classList.add('show');
+  clearTimeout(snackTimer);
+  snackTimer = setTimeout(() => s.classList.remove('show'), 5000);
+}
+const busy = (on) => $('progress').classList.toggle('on', on);
+
+async function init() {
+  try {
+    const [tariffs, samples] = await Promise.all([
+      api('/api/tariffs').then((r) => r.json()),
+      api('/api/samples').then((r) => r.json()),
+    ]);
+    for (const t of tariffs) $('current').add(new Option(`${t.name} · ${fmt(t.fee)} сом`, t.id));
+    tariffNames = Object.fromEntries(tariffs.map((t) => [t.id, t.name]));
+    for (const s of samples) $('sample').add(new Option(s, s));
+    if (!samples.length) { $('modeSample').disabled = true; $('sampleAll').disabled = true; }
+  } catch (e) {
+    snackbar('Не удалось загрузить список тарифов. Проверьте, что сервер запущен.');
+  }
+}
+
+function setMode(m) {
+  mode = m;
+  $('goLabel').textContent = m === 'file' && pickedFiles.length > 1 ? `Рассчитать всех (${pickedFiles.length})` : 'Подобрать тариф';
+  $('modeFile').setAttribute('aria-pressed', m === 'file');
+  $('modeSample').setAttribute('aria-pressed', m === 'sample');
+  $('fileBox').classList.toggle('hidden', m !== 'file');
+  $('sampleBox').classList.toggle('hidden', m !== 'sample');
+}
+$('modeFile').addEventListener('click', () => setMode('file'));
+$('modeSample').addEventListener('click', () => setMode('sample'));
+
+function pick(files) {
+  const list = Array.from(files || []);
+  const csv = list.filter((f) => /\.csv$/i.test(f.name) || f.type === 'text/csv');
+  if (list.length > csv.length) snackbar(`Пропущено не-CSV файлов: ${list.length - csv.length}`);
+  pickedFiles = csv;
+  const n = csv.length;
+  $('drop').classList.toggle('has-file', n > 0);
+  if (n === 0) {
+    $('dropTitle').textContent = 'Перетащите один или несколько usage_<id>.csv';
+    $('dropHint').textContent = 'или нажмите, чтобы выбрать · можно сразу несколько файлов';
+  } else if (n === 1) {
+    $('dropTitle').textContent = csv[0].name;
+    $('dropHint').textContent = `${(csv[0].size / 1024).toFixed(1)} КБ · нажмите, чтобы заменить`;
+  } else {
+    const names = csv.slice(0, 3).map((f) => f.name).join(', ') + (n > 3 ? ` и ещё ${n - 3}` : '');
+    $('dropTitle').textContent = `${n} файлов`;
+    $('dropHint').textContent = `${names} · нажмите, чтобы заменить`;
+  }
+  $('goLabel').textContent = n > 1 ? `Рассчитать всех (${n})` : 'Подобрать тариф';
+  if (n) setMode('file');
+}
+
+const drop = $('drop');
+drop.addEventListener('click', () => $('file').click());
+drop.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('file').click(); } });
+drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('over'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+drop.addEventListener('drop', (e) => { e.preventDefault(); drop.classList.remove('over'); pick(e.dataTransfer.files); });
+$('file').addEventListener('change', (e) => { pick(e.target.files); e.target.value = ''; });
+
+$('form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const current = $('current').value;
+  const sample = $('sample').value;
+  if (mode === 'file' && !pickedFiles.length) { snackbar('Выберите CSV-файл детализации'); return; }
+  if (mode === 'file' && pickedFiles.length > 1) {
+    startBatch(await fileEntries(pickedFiles), `Файлов: ${pickedFiles.length}${current ? ' · тариф для всех: ' + $('current').selectedOptions[0].text : ' · тариф выбирается для каждого абонента'}`, current);
+    return;
+  }
+  clearBatch();
+  if (mode === 'sample' && !sample) { snackbar('Выберите файл из списка примеров'); return; }
+  $('go').disabled = true;
+  busy(true);
+  $('status').textContent = '';
+  try {
+    let res;
+    if (mode === 'file') {
+      const qs = new URLSearchParams({ name: pickedFiles[0].name, current });
+      let body;
+      try { body = await pickedFiles[0].text(); }
+      catch (readErr) { pick(null); throw new Error('Не удалось прочитать файл — возможно, его изменили после выбора. Выберите файл заново.'); }
+      res = await api('/api/recommend?' + qs, { method: 'POST', body });
+    } else {
+      res = await api('/api/recommend?' + new URLSearchParams({ sample, current }));
+    }
+    const data = await res.json();
+    if (!res.ok) { const err = new Error(data.error || res.statusText); err.code = data.code; throw err; }
+    render(data);
+    $('status').textContent = data.skipped_rows ? `Пропущено строк с ошибками: ${data.skipped_rows}` : '';
+  } catch (err) {
+    if (err.code === 'current_tariff_missing') askCurrentTariff(); else snackbar(err.message);
+  } finally {
+    $('go').disabled = false;
+    busy(false);
+  }
+});
+
+function render(d) {
+  lastResult = d;
+  $('snackbar').classList.remove('show');
+  clearTariffAttention();
+  $('empty').classList.add('hidden');
+  $('result').classList.remove('hidden');
+  const sw = d.recommendation === 'switch';
+  const best = d.recommendation === 'best';
+  const recName = d.recommended_label || d.recommended_tariff_name;
+  const addOnly = d.action === 'add_packages';
+  const headline = addOnly ? 'Подключить «' + esc((d.recommended_addon_names || []).join('» и «')) + '» к тарифу «' + esc(d.current_tariff_name) + '»'
+    : sw ? 'Перейти на «' + esc(recName) + '»'
+    : best ? 'Вам подходит «' + esc(recName) + '»'
+    : 'Остаться на «' + esc(d.current_tariff_name) + '»';
+  $('verdict').className = 'verdict ' + (sw || best ? 'switch' : 'stay');
+  $('verdict').innerHTML = `
+    <div class="badge" aria-hidden="true">${sw ? ICON_SWITCH : ICON_STAY}</div>
+    <div class="label-m eyebrow">Абонент ${esc(d.subscriber)} · ${d.months.length} мес.</div>
+    <h2 class="headline">${headline}</h2>
+    <p>${esc(d.reason)}</p>
+    ${best ? '<div style="margin-top:12px"><button type="button" class="btn tonal" id="askCur">Указать текущий тариф</button></div>' : ''}`;
+  if (best) $('askCur').addEventListener('click', () => { $('current').focus(); $('current').scrollIntoView({ block: 'center', behavior: 'smooth' }); });
+
+  const net = Object.keys(d).find((k) => k.startsWith('net_savings_'));
+  const stat = (label, value, cls = '') =>
+    `<div class="stat ${cls}"><div class="label-m muted">${label}</div><div class="v">${value}</div></div>`;
+  const som = (v) => `${fmt(v)}<small>сом</small>`;
+  $('stats').innerHTML = best
+    ? stat('Сейчас в месяц', '—') +
+      stat('Лучший вариант', som(d.new_cost), 'accent') +
+      stat('Экономия в месяц', '—') +
+      stat('Выгода за 3 мес.', '—')
+    : stat('Сейчас в месяц', som(d.current_cost)) +
+      stat('Будет в месяц', som(d.new_cost)) +
+      stat('Экономия в месяц', som(d.savings_per_month), Number(d.savings_per_month) > 0 ? 'accent' : '') +
+      stat('Выгода за 3 мес.', net ? som(d[net]) : '—');
+
+  drawDashboard(d);
+  drawSummary(d);
+  drawUsageMonths(d);
+  drawMonths(d);
+  $('raw').textContent = JSON.stringify(d, null, 2);
+  $('explain').textContent = 'Короткий текст простыми словами: что выгоднее и почему. Цифры берутся из расчёта.';
+  $('explain').classList.add('placeholder');
+  $('explainSrc').classList.add('hidden');
+}
+
+function switchMath(d, r) {
+  if (d.current_cost == null) return null;
+  const rules = d.switch_rules || { fee: 50, payback_months: 3, payback_inclusive: false, fee_for_addon_only_change: false };
+  const sum = (o) => Object.values(o || {}).reduce((a, v) => a + Number(v), 0);
+  const months = Math.max(1, Object.keys(d.current_monthly_costs || {}).length);
+  const perMonth = (sum(d.current_monthly_costs) - sum(r.monthly_costs)) / months;
+  const same = r.tariff === d.current_tariff;
+  const fee = same && !rules.fee_for_addon_only_change ? 0 : Number(rules.fee);
+  const N = Number(rules.payback_months);
+  const net = perMonth * N - fee;
+  const pays = fee === 0 ? perMonth > 1e-9 : (rules.payback_inclusive ? net >= -1e-9 : net > 1e-9);
+  return { perMonth: r2(perMonth), net: r2(net), fee, N, pays, same };
+}
+
+function monthLabel(m) {
+  return m === 'no_usage' ? 'Нет данных'
+    : new Date(m + '-01T00:00:00').toLocaleDateString('ru-RU', { month: 'long' });
+}
+
+const DASH_METRICS = [
+  { key: 'cost', label: 'Стоимость', unit: 'сом' },
+  { key: 'data_gb', label: 'Интернет', unit: 'ГБ' },
+  { key: 'minutes', label: 'Звонки', unit: 'мин' },
+  { key: 'sms', label: 'SMS', unit: 'шт' },
+];
+const MINOR_SHARE = 0.25;
+
+function dashMetric(p, key) {
+  const r = p.row, u = r.usage || {}, bd = p.bd || {};
+  if (key === 'cost') {
+    const base = Number(bd.fee || 0) + Number(bd.addons || 0);
+    return { counted: Number(p.cost), night: 0, limit: base, limitLabel: Number(bd.addons) > 0 ? 'абонплата + пакеты' : 'абонплата' };
+  }
+  const night = key === 'data_gb' && r.limits.night_unlimited ? Number(u.night_free_gb) || 0 : 0;
+  const base = r.limits[key];
+  const limit = base == null ? null : Number(base) + (p.addons ? Number((r.addon_limits || {})[key] || 0) : 0);
+  return { counted: Number(u[key]) || 0, night, limit, limitLabel: 'лимит' };
+}
+
+function overKind(over, limit) {
+  if (over <= 0.005) return '';
+  return limit > 0 && over / limit <= MINOR_SHARE ? 'minor' : 'over';
+}
+
+function dashFmt(v, unit) {
+  const n = Number(v);
+  return unit === 'сом' ? `${Math.abs(n - Math.round(n)) < 0.005 ? num(n, 0) : fmt(n)} сом` : `${num(n, 2)} ${unit}`;
+}
+
+function dashScale(panels, key) {
+  const ms = panels.map((p) => dashMetric(p, key));
+  const top = Math.max(0, ...ms.map((m) => m.counted + m.night));
+  let s = top;
+  for (const m of ms) if (m.limit != null && (top === 0 || m.limit <= top * 2.5)) s = Math.max(s, m.limit);
+  return s > 0 ? s * 1.12 : 1;
+}
+
+const OVER_KEY = { minutes: 'over_minutes', data_gb: 'over_data', sms: 'over_sms' };
+let dashTips = [];
+
+function tipRow(label, value, cls = '') {
+  return `<div class="r ${cls}"><span>${label}</span><span>${value}</span></div>`;
+}
+
+function dashTipHtml(p, metric, m, d) {
+  const bd = p.bd || {}, name = esc(p.row.tariff_name);
+  if (metric.key === 'cost') {
+    let h = `<b>Стоимость · «${name}»</b>` + tipRow('Абонплата', dashFmt(bd.fee || 0, 'сом'));
+    if (Number(bd.addons) > 0) h += tipRow(`Пакеты ${(p.row.best_addon_names || []).map((a) => '«' + esc(a) + '»').join(' + ')}`, dashFmt(bd.addons, 'сом'));
+    const parts = [['Звонки сверх', bd.over_minutes], ['Интернет сверх', bd.over_data], ['SMS сверх', bd.over_sms], ['Роуминг', bd.roaming]]
+      .filter(([, v]) => Number(v) > 0.005);
+    parts.forEach(([l, v]) => { h += tipRow(l, '+' + dashFmt(v, 'сом'), l === 'Роуминг' ? '' : 'bad'); });
+    h += tipRow('Итого в месяц', dashFmt(p.cost, 'сом'), 'tot');
+    const diff = d.current_cost != null ? Number(d.current_cost) - Number(p.cost) : 0;
+    if (p.side === 'rec' && Math.abs(diff) > 0.005) {
+      h += diff > 0 ? `<em>На ${dashFmt(diff, 'сом')} в месяц дешевле текущего</em>` : `<em>На ${dashFmt(-diff, 'сом')} в месяц дороже текущего</em>`;
+    } else if (!parts.length) h += '<em>Переплат сверх тарифа нет</em>';
+    return h;
+  }
+  const u = metric.unit, used = m.counted, overSom = Number(bd[OVER_KEY[metric.key]] || 0);
+  let h = `<b>${metric.label} · «${name}»</b>` + tipRow('Расход в месяц', dashFmt(used + m.night, u));
+  if (m.night > 0.005) h += tipRow('Ночью — бесплатно', dashFmt(m.night, 'ГБ'), 'ok');
+  if (m.night > 0.005) h += tipRow('Днём, в счёт пакета', dashFmt(used, u), 'sub');
+  if (m.limit == null) return h + tipRow('Входит в тариф', 'безлимит', 'ok') + '<em>Перерасхода быть не может</em>';
+  const extra = p.addons ? Number((p.row.addon_limits || {})[metric.key] || 0) : 0;
+  h += tipRow('Входит в тариф', dashFmt(m.limit, u));
+  if (extra > 0) h += tipRow('в том числе пакеты', '+' + dashFmt(extra, u), 'sub');
+  const over = Math.max(0, used - m.limit);
+  if (over > 0.005) {
+    const k = overKind(over, m.limit) === 'minor' ? 'minor' : 'bad';
+    h += tipRow('Сверх лимита', '+' + dashFmt(over, u), k);
+    if (overSom > 0.005) h += tipRow('Перерасход стоит', dashFmt(overSom, 'сом') + '/мес', 'tot ' + k);
+  } else if (used <= 0.005) h += '<em>Услугой не пользуется</em>';
+  else h += tipRow('Запас', dashFmt(m.limit - used, u), 'ok') + '<em>Всё входит в тариф, доплат нет</em>';
+  return h;
+}
+
+function dashColumn(p, metric, S) {
+  const m = dashMetric(p, metric.key);
+  const total = m.counted + m.night;
+  const pct = (v) => Math.min(100, (v / S) * 100);
+  const unl = m.limit == null;
+  const inPack = unl ? m.counted : Math.min(m.counted, m.limit);
+  const over = unl ? 0 : Math.max(0, m.counted - m.limit);
+  const kind = overKind(over, m.limit || 0);
+  let segs = `<i class="seg-in" style="height:${(inPack / Math.max(total, 1e-9)) * 100}%"></i>`;
+  if (over > 0.005) segs += `<i class="seg-${kind}" style="height:${(over / total) * 100}%"></i>`;
+  if (m.night > 0.005) segs += `<i class="seg-night" style="height:${(m.night / total) * 100}%"></i>`;
+  const barH = total > 0 ? pct(total) : 0;
+  const valCls = total <= 0.005 ? 'zero' : kind;
+  let line = '';
+  if (unl) line = '<div class="dc-inf">безлимит</div>';
+  else {
+    const pinned = m.limit > S;
+    line = `<div class="dc-line${pinned ? ' top' : ''}" style="${pinned ? '' : `top:${100 - pct(m.limit)}%`}"><span>${pinned ? '↑ ' : ''}<em>${m.limitLabel} </em>${dashFmt(m.limit, metric.unit)}</span></div>`;
+  }
+  let st;
+  if (metric.key === 'cost') {
+    st = over > 0.005 ? `<div class="dc-st ${kind}">Сверх: +${fmt(over)} сом</div>` : '<div class="dc-st ok">Только абонплата</div>';
+  } else if (total <= 0.005) st = '<div class="dc-st">Не пользуется</div>';
+  else if (unl) st = '<div class="dc-st ok">Всё входит</div>';
+  else if (over > 0.005) st = `<div class="dc-st ${kind}">Сверх: +${num(over, 2)} ${metric.unit}</div>`;
+  else if (m.limit - m.counted <= 0.005) st = '<div class="dc-st ok">Ровно по лимиту</div>';
+  else st = `<div class="dc-st ok">Запас: ${num(m.limit - m.counted, 2)} ${metric.unit}</div>`;
+  if (m.night > 0.005) st += `<div class="dc-st">ночью ${num(m.night, 2)} ГБ — бесплатно</div>`;
+  const aria = `${metric.label}: ${dashFmt(total, metric.unit)}${unl ? ', безлимит' : `, ${m.limitLabel} ${dashFmt(m.limit, metric.unit)}`}${over > 0.005 ? `, сверх ${dashFmt(over, metric.unit)}` : ''}`;
+  dashTips.push(dashTipHtml(p, metric, m, p.d));
+  return { kind, html: `<div class="dc">
+    <div class="dc-track" role="img" tabindex="0" data-tip="${dashTips.length - 1}" aria-label="${esc(aria)}">
+      <div class="dc-rail"></div>
+      <div class="dc-bar" style="height:${barH}%">${segs}</div>
+      <div class="dc-val ${valCls}" style="bottom:${barH}%">${dashFmt(total, metric.unit)}</div>
+      ${line}
+    </div>
+    <div class="dc-label">${metric.label}</div>${st}
+  </div>` };
+}
+
+function dashPanel(p, scales, d) {
+  const cols = DASH_METRICS.map((m) => dashColumn(p, m, scales[m.key]));
+  const usageKinds = cols.slice(1).map((c) => c.kind);
+  const addonNames = p.addons ? (p.row.best_addon_names || []) : [];
+  const fee = Number((p.bd || {}).fee || 0), addonsCost = Number((p.bd || {}).addons || 0);
+  const sub = `Абонплата ${fmt(fee)} сом${addonNames.length ? ` · пакеты ${addonNames.map((a) => '«' + esc(a) + '»').join(' + ')} (+${fmt(addonsCost)} сом)` : ''}`;
+  let tag = p.tag, tagCls = p.tagCls;
+  if (p.side === 'cur') {
+    const overs = usageKinds.filter(Boolean).length;
+    if (usageKinds.includes('over')) { tag += ' · большой перерасход'; tagCls = 'bad'; }
+    else if (overs) { tag += ' · небольшой перерасход'; tagCls = 'minor'; }
+    else { tag += ' · в пределах пакета'; tagCls = 'good'; }
+  }
+  return `<div class="dp${p.side === 'rec' && p.highlight ? ' rec' : ''}">
+    <span class="dp-tag ${tagCls}">${tag}</span>
+    <h3>${p.title}<small>${esc(p.row.tariff)}</small></h3>
+    <div class="dp-sub">${sub}</div>
+    <div class="dp-cols">${cols.map((c) => c.html).join('')}</div>
+    <div class="dp-foot ${p.footCls || ''}">${p.foot}</div>
+  </div>`;
+}
+
+function drawDashboard(d) {
+  const rows = d.tariff_comparison || [];
+  const box = $('dash');
+  if (!rows.length || !rows[0].usage) { box.innerHTML = ''; return; }
+  const cur = rows.find((r) => r.tariff === d.current_tariff);
+  const panels = [];
+  if (cur) {
+    const overServices = ['over_minutes', 'over_data', 'over_sms'].filter((k) => Number((cur.breakdown_without_addons || {})[k]) > 0.005).length;
+    panels.push({
+      side: 'cur', row: cur, addons: false, bd: cur.breakdown_without_addons || cur.breakdown, cost: d.current_cost,
+      tag: 'Текущий', tagCls: '', title: `Текущий тариф «${esc(d.current_tariff_name)}»`,
+      foot: `Итого: ${fmt(d.current_cost)} сом/мес${overServices ? ` · перерасход по ${overServices} ${overServices === 1 ? 'услуге' : 'услугам'}` : ''}`,
+      footCls: overServices ? 'bad' : '',
+    });
+  }
+  let rec, tag, title, foot, footCls = '', highlight = true;
+  if (!cur) {
+    rec = rows[0];
+    tag = 'Самый выгодный';
+    title = `«${esc(rec.tariff_name)}»`;
+    foot = `Итого: ${fmt(rec.best_cost)} сом/мес`;
+  } else if (d.recommendation === 'switch') {
+    rec = rows.find((r) => r.tariff === d.recommended_tariff) || rows[0];
+    const m = switchMath(d, rec);
+    tag = d.action === 'add_packages' ? 'Рекомендуем · подключить пакеты' : 'Рекомендуемый';
+    title = d.action === 'add_packages' ? `«${esc(rec.tariff_name)}» + пакеты` : `Рекомендуемый «${esc(rec.tariff_name)}»`;
+    const times = Number(rec.best_cost) > 0 ? Number(d.current_cost) / Number(rec.best_cost) : 0;
+    foot = `Итого: ${fmt(rec.best_cost)} сом/мес · экономия ${fmt(m.perMonth)} сом/мес${times >= 1.5 ? ` (в ${num(times, 1)} раза дешевле)` : ''}`;
+    footCls = 'good';
+  } else {
+    rec = rows.find((r) => r.tariff !== d.current_tariff) || rows[0];
+    const m = switchMath(d, rec);
+    highlight = false;
+    tag = 'Ближайшая альтернатива';
+    title = `«${esc(rec.tariff_name)}»`;
+    foot = m.perMonth > 0.005
+      ? `Итого: ${fmt(rec.best_cost)} сом/мес · дешевле на ${fmt(m.perMonth)}, но переход за ${fmt(m.fee)} сом не окупится`
+      : `Итого: ${fmt(rec.best_cost)} сом/мес · дороже на ${fmt(-m.perMonth)} — остаёмся`;
+  }
+  panels.push({ side: 'rec', row: rec, addons: true, bd: rec.breakdown, cost: rec.best_cost, tag, tagCls: highlight ? 'rec' : '', title, foot, footCls, highlight });
+
+  const scales = {};
+  for (const m of DASH_METRICS) scales[m.key] = dashScale(panels, m.key);
+  hideDashTip();
+  dashTips = [];
+  panels.forEach((p) => { p.d = d; });
+  box.innerHTML = (cur ? '' : `<div class="dp"><span class="dp-tag">Текущий</span><div class="dp-empty">Текущий тариф не указан.<br>Выберите его в форме — покажем, где вы переплачиваете.</div></div>`)
+    + panels.map((p) => dashPanel(p, scales, d)).join('');
+}
+
+let dashTipPinned = null;
+
+function showDashTip(track) {
+  const tip = $('dashTip'), html = dashTips[Number(track.dataset.tip)];
+  if (!html) return;
+  $('dash').querySelectorAll('.dc-track.active').forEach((t) => t.classList.remove('active'));
+  track.classList.add('active');
+  track.setAttribute('aria-describedby', 'dashTip');
+  tip.innerHTML = html;
+  const r = track.getBoundingClientRect();
+  const marks = [...track.querySelectorAll('.dc-bar, .dc-val')].map((el) => el.getBoundingClientRect().top);
+  const w = tip.offsetWidth, h = tip.offsetHeight, vw = document.documentElement.clientWidth;
+  let left = Math.max(8, Math.min(vw - w - 8, r.left + r.width / 2 - w / 2));
+  let top = Math.min(...marks, r.top + r.height - 20) - h - 8;
+  if (top < 8) top = r.bottom + 8;
+  tip.style.left = left + 'px';
+  tip.style.top = top + 'px';
+  tip.classList.add('show');
+}
+
+function hideDashTip() {
+  const tip = $('dashTip');
+  if (!tip) return;
+  tip.classList.remove('show');
+  dashTipPinned = null;
+  $('dash').querySelectorAll('.dc-track.active').forEach((t) => { t.classList.remove('active'); t.removeAttribute('aria-describedby'); });
+}
+
+(() => {
+  const dash = $('dash');
+  const trackOf = (e) => e.target.closest && e.target.closest('.dc-track');
+  dash.addEventListener('pointerover', (e) => { const t = trackOf(e); if (t && e.pointerType === 'mouse' && !dashTipPinned) showDashTip(t); });
+  dash.addEventListener('pointerout', (e) => {
+    const t = trackOf(e);
+    if (t && e.pointerType === 'mouse' && !dashTipPinned && !t.contains(e.relatedTarget)) hideDashTip();
+  });
+  dash.addEventListener('click', (e) => {
+    const t = trackOf(e);
+    if (!t) return;
+    if (dashTipPinned === t) { hideDashTip(); return; }
+    showDashTip(t);
+    dashTipPinned = t;
+  });
+  dash.addEventListener('focusin', (e) => { const t = trackOf(e); if (t) showDashTip(t); });
+  dash.addEventListener('focusout', (e) => { if (!dash.contains(e.relatedTarget)) hideDashTip(); });
+  dash.addEventListener('keydown', (e) => {
+    const t = trackOf(e);
+    if (t && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); t.click(); }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && $('dashTip').classList.contains('show')) { e.stopImmediatePropagation(); hideDashTip(); }
+  }, true);
+  document.addEventListener('pointerdown', (e) => { if (dashTipPinned && !trackOf(e)) hideDashTip(); });
+  window.addEventListener('scroll', () => { if ($('dashTip').classList.contains('show')) hideDashTip(); }, { passive: true });
+  window.addEventListener('resize', hideDashTip);
+})();
+
+const r2 = (n) => Math.round(n * 100) / 100;
+
+function drawSummary(d) {
+  const box = $('summary');
+  const rec = (d.tariff_comparison || []).find((r) => r.tariff === d.recommended_tariff);
+  let cls = 'warn', title, big, text;
+  if (d.current_cost == null) {
+    title = `Самый выгодный вариант — «${esc(d.recommended_label || d.recommended_tariff_name)}»`;
+    big = `${fmt(d.new_cost)} <small>сом/мес</small>`;
+    text = 'Текущий тариф неизвестен, поэтому экономию не считаем. Укажите его в форме слева — покажем, сколько сэкономите.';
+  } else if (d.recommendation === 'stay' || !rec) {
+    title = `Оставайтесь на тарифе «${esc(d.current_tariff_name)}»`;
+    big = `${fmt(d.current_cost)} <small>сом/мес</small>`;
+    text = esc(d.reason || 'Переход на другой тариф не окупится.');
+  } else {
+    const m = switchMath(d, rec);
+    cls = 'good';
+    const addons = (d.recommended_addon_names || []).map((a) => '«' + esc(a) + '»').join(' и ');
+    title = d.action === 'add_packages'
+      ? `Подключите ${addons} к тарифу «${esc(d.current_tariff_name)}»`
+      : `Переходите на «${esc(d.recommended_label || d.recommended_tariff_name)}»`;
+    big = `−${fmt(m.perMonth)} <small>сом/мес</small>`;
+    text = `Сейчас ${fmt(d.current_cost)} сом в месяц, будет ${fmt(d.new_cost)}. За ${m.N} мес. экономия ${fmt(m.net)} сом`
+      + (m.fee > 0 ? ` — уже с учётом платы за переход ${fmt(m.fee)} сом.` : '; подключение пакетов бесплатное.');
+  }
+  box.innerHTML = `<div class="sum ${cls}"><div class="k">Итог</div><div class="t">${title}</div><div class="big">${big}</div><div class="s">${text}</div></div>`;
+}
+
+function drawMonths(d) {
+  const label = (m) => m === 'no_usage' ? 'Нет данных' :
+    new Date(m + '-01T00:00:00').toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+  if (d.current_cost == null) {
+    let t = '<thead><tr><th>Месяц</th><th>Лучший вариант, сом</th></tr></thead><tbody>';
+    for (const [m, v] of Object.entries(d.new_monthly_costs)) t += `<tr><td>${esc(label(m))}</td><td>${fmt(v)}</td></tr>`;
+    t += `</tbody><tfoot><tr><td>В среднем</td><td>${fmt(d.new_cost)}</td></tr></tfoot>`;
+    $('months').innerHTML = t;
+    return;
+  }
+  const months = Object.keys(d.current_monthly_costs);
+  let h = '<thead><tr><th>Месяц</th><th>Сейчас</th><th>Рекомендация</th><th>Разница</th></tr></thead><tbody>';
+  for (const m of months) {
+    const a = Number(d.current_monthly_costs[m]);
+    const b = Number(d.new_monthly_costs[m]);
+    h += `<tr><td>${esc(label(m))}</td><td>${fmt(a)}</td><td>${fmt(b)}</td><td class="${a - b > 0 ? 'pos' : ''}">${fmt(a - b)}</td></tr>`;
+  }
+  h += `</tbody><tfoot><tr><td>В среднем</td><td>${fmt(d.current_cost)}</td><td>${fmt(d.new_cost)}</td><td class="${Number(d.savings_per_month) > 0 ? 'pos' : ''}">${fmt(d.savings_per_month)}</td></tr></tfoot>`;
+  $('months').innerHTML = h;
+}
+
+$('explainBtn').addEventListener('click', async () => {
+  if (!lastResult) return;
+  const btn = $('explainBtn');
+  btn.disabled = true;
+  busy(true);
+  $('explain').textContent = 'Готовим объяснение…';
+  $('explainSrc').classList.add('hidden');
+  try {
+    const res = await api('/api/explain', { method: 'POST', body: JSON.stringify(lastResult) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || res.statusText);
+    $('explain').textContent = data.explanation;
+    $('explain').classList.remove('placeholder');
+    $('explainSrc').textContent = data.source === 'llm'
+      ? `Текст написал Claude (${data.model}), суммы взяты из расчёта`
+      : `Шаблонный текст${data.note ? ' · ' + data.note : ''}`;
+    $('explainSrc').classList.remove('hidden');
+    if (batch.current >= 0 && batch.items[batch.current]?.data === lastResult) {
+      batch.items[batch.current].explain = { text: data.explanation, src: $('explainSrc').textContent };
+      saveBatch();
+    }
+  } catch (err) {
+    $('explain').textContent = 'Не получилось подготовить объяснение.';
+    snackbar(err.message);
+  } finally {
+    btn.disabled = false;
+    busy(false);
+  }
+});
+
+const BATCH_KEY = 'batch_v2';
+const CHOICE_KEY = 'tariff_choices_v1';
+const batch = { items: [], running: false, current: -1, source: '' };
+
+function loadChoices() {
+  try { return JSON.parse(localStorage.getItem(CHOICE_KEY) || '{}') || {}; } catch (e) { return {}; }
+}
+
+function rememberChoice(name, tariff) {
+  const c = loadChoices();
+  c[name] = tariff;
+  try { localStorage.setItem(CHOICE_KEY, JSON.stringify(c)); } catch (e) { }
+}
+
+async function runBatch(items, task, onProgress, concurrency = 3) {
+  let next = 0;
+  async function worker() {
+    while (next < items.length) {
+      const it = items[next++];
+      it.state = 'running';
+      onProgress();
+      try {
+        await task(it);
+      } catch (e) {
+        it.state = 'error';
+        it.error = e.message;
+        it.log = e.log || e.message;
+      }
+      onProgress();
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, worker));
+}
+
+async function fileEntries(files) {
+  const texts = await Promise.all(files.map((f) => f.text().catch(() => null)));
+  return files.map((f, k) => ({ name: f.name, kind: 'file', csv: texts[k] }));
+}
+
+function sampleEntries(samples) {
+  return samples.map((s) => ({ name: s, kind: 'sample', csv: null }));
+}
+
+async function validateItem(it) {
+  if (it.kind !== 'file') return;
+  if (it.csv == null) throw Object.assign(new Error('Не удалось прочитать файл'), { log: 'Файл недоступен для чтения — выберите его заново' });
+  const res = await api('/api/validate', { method: 'POST', body: it.csv });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw Object.assign(new Error(data.error || res.statusText), { log: `HTTP ${res.status}\n${data.error || ''}` });
+  it.records = data.records;
+  it.skipped = data.skipped_rows;
+}
+
+async function computeItem(it, tariff) {
+  let res;
+  if (it.kind === 'sample') {
+    res = await api('/api/recommend?' + new URLSearchParams({ sample: it.name, current: tariff }));
+  } else {
+    if (it.csv == null) throw new Error('Файл больше недоступен — загрузите его заново');
+    res = await api('/api/recommend?' + new URLSearchParams({ name: it.name, current: tariff }), { method: 'POST', body: it.csv });
+  }
+  const text = await res.text();
+  let data;
+  try { data = JSON.parse(text); } catch (e) { throw Object.assign(new Error('Сервер вернул не JSON'), { log: text.slice(0, 500) }); }
+  if (!res.ok) throw Object.assign(new Error(data.error || res.statusText), { log: `HTTP ${res.status}\n${data.error || ''}` });
+  it.data = data;
+  it.state = 'done';
+  it.chosen = tariff;
+  it.explain = null;
+  it.error = null;
+}
+
+async function startBatch(entries, source, formTariff) {
+  if (batch.running) return;
+  const choices = loadChoices();
+  batch.running = true;
+  batch.items = entries.map((e) => ({ ...e, chosen: formTariff || choices[e.name] || null, state: 'queued', data: null, error: null, log: '' }));
+  batch.current = -1;
+  batch.source = source;
+  showBatchView();
+  $('go').disabled = true;
+  $('sampleAll').disabled = true;
+  busy(true);
+  try {
+    await runBatch(batch.items, async (it) => {
+      await validateItem(it);
+      if (it.chosen) {
+        await computeItem(it, it.chosen);
+        if (formTariff) rememberChoice(it.name, formTariff);
+      } else {
+        it.state = 'pending';
+      }
+    }, renderBatch);
+  } finally {
+    batch.running = false;
+    $('go').disabled = false;
+    $('sampleAll').disabled = false;
+    busy(false);
+    renderBatch();
+    saveBatch();
+  }
+}
+
+function saveBatch() {
+  try {
+    sessionStorage.setItem(BATCH_KEY, JSON.stringify({ items: batch.items, source: batch.source }));
+  } catch (e) {
+    try {
+      sessionStorage.setItem(BATCH_KEY, JSON.stringify({ items: batch.items.map(({ csv, ...rest }) => rest), source: batch.source }));
+    } catch (e2) { }
+  }
+}
+
+function restoreBatch() {
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(BATCH_KEY) || 'null');
+    if (saved && Array.isArray(saved.items) && saved.items.length) {
+      batch.items = saved.items.map((it) => (['done', 'error', 'pending'].includes(it.state) ? it : { ...it, state: 'pending' }));
+      batch.source = saved.source || '';
+      showBatchView();
+    }
+  } catch (e) { }
+}
+
+function clearBatch() {
+  batch.items = [];
+  batch.current = -1;
+  try { sessionStorage.removeItem(BATCH_KEY); } catch (e) { }
+  $('batch').classList.add('hidden');
+  $('detailBar').classList.add('hidden');
+}
+
+function batchStatus(it) {
+  if (it.state === 'queued') return { cls: 'wait', text: 'В очереди' };
+  if (it.state === 'running') return { cls: 'run', text: 'Проверяем…' };
+  if (it.state === 'pending') return { cls: 'warn', text: 'Выберите тариф' };
+  if (it.state === 'error') return { cls: 'err', text: 'Ошибка структуры CSV' };
+  const d = it.data;
+  if (d.action === 'change') return { cls: 'ok', text: 'Сменить тариф' };
+  if (d.action === 'add_packages') return { cls: 'ok', text: 'Подключить пакеты' };
+  return { cls: 'stay', text: 'Остаться' };
+}
+
+function batchStats(items) {
+  const done = items.filter((x) => x.state === 'done');
+  const errors = items.filter((x) => x.state === 'error').length;
+  const pending = items.filter((x) => x.state === 'pending').length;
+  const change = done.filter((x) => x.data.action === 'change').length;
+  const packs = done.filter((x) => x.data.action === 'add_packages').length;
+  const sw = done.filter((x) => x.data.recommendation === 'switch');
+  const saving = sw.reduce((a, x) => a + Number(x.data.savings_per_month), 0);
+  const net = sw.reduce((a, x) => a + Number(x.data.net_savings_3m), 0);
+  return { total: items.length, finished: done.length + errors + pending, done: done.length, errors, pending, change, packs, saving, net };
+}
+
+function renderBatch() {
+  const items = batch.items;
+  const s = batchStats(items);
+  $('batchBar').style.width = (s.total ? (s.finished / s.total) * 100 : 0) + '%';
+  $('batchBar').parentElement.classList.toggle('done', !batch.running && s.total > 0);
+  $('batchProgress').textContent = batch.running ? `Загружено ${s.finished} из ${s.total}` : `Загружено: ${s.total - s.errors} из ${s.total}`;
+  $('batchSource').textContent = batch.source;
+  const stat = (label, value, sub, cls = '') => `<div class="stat ${cls}"><div class="label-m muted">${label}</div><div class="v">${value}</div>${sub ? `<div class="body-s">${sub}</div>` : ''}</div>`;
+  $('batchKpis').innerHTML =
+    stat('Абонентов', `${s.total - s.errors}<small>в списке</small>`, s.errors ? `пропущено с ошибкой: ${s.errors}` : 'все файлы в порядке') +
+    stat('Рассчитано', `${s.done}<small>из ${s.total - s.errors}</small>`, s.pending ? `ждут выбора тарифа: ${s.pending}` : 'тариф выбран у всех', s.pending ? '' : '') +
+    stat('Экономия рассчитанных', `${fmt(s.saving)}<small>сом/мес</small>`, `за 3 мес. ${fmt(s.net)} сом с учётом платы`, s.saving > 0 ? 'accent' : '') +
+    stat('Сменить тариф', `${s.change}<small>из ${s.done}</small>`, s.packs ? `ещё ${s.packs} — подключить пакеты` : '');
+  $('exportJson').disabled = $('exportCsv').disabled = batch.running || !s.done;
+
+  let h = '<thead><tr><th>Абонент</th><th>Текущие, сом/мес</th><th>Рекомендация</th><th>Новые, сом/мес</th><th>Экономия</th><th>Статус</th><th></th></tr></thead><tbody>';
+  const chevron = '<span class="b-go" title="Открыть" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></span>';
+  items.forEach((it, i) => {
+    const st = batchStatus(it);
+    const d = it.data;
+    const id = d ? d.subscriber : subscriberFromName(it.name);
+    const meta = [];
+    if (it.state === 'done') meta.push(`<small class="tar">тариф «${esc(tariffNames[it.chosen] || it.chosen)}» · выбран</small>`);
+    if (it.state === 'pending') meta.push(`<small class="tar need">тариф не выбран — нажмите${it.records != null ? ` · записей: ${it.records}` : ''}</small>`);
+    const skipped = d ? d.skipped_rows : it.skipped;
+    if (it.state !== 'error' && skipped) meta.push(`<small class="warn">пропущено строк: ${skipped}</small>`);
+    const who = `<div class="b-sub"><b>Абонент #${esc(id)}</b><small>${esc(it.name)}</small>${meta.join('')}</div>`;
+    if (it.state !== 'done') {
+      const action = it.state === 'error'
+        ? `<button type="button" class="b-more" data-log="${i}" aria-expanded="${!!it.showLog}">${it.showLog ? 'Скрыть лог' : 'Лог'}</button>`
+        : it.state === 'pending' ? chevron : '';
+      const attrs = it.state === 'pending' ? ` tabindex="0" aria-label="Выбрать тариф: абонент ${esc(id)}"` : '';
+      h += `<tr class="b-row${it.state === 'error' ? ' err' : ''}" data-i="${i}"${attrs}><td>${who}</td><td class="b-empty">—</td><td class="b-empty">—</td><td class="b-empty">—</td><td class="b-empty">—</td><td><span class="b-badge ${st.cls}">${st.text}</span></td><td>${action}</td></tr>`;
+      if (it.state === 'error' && it.showLog) h += `<tr class="b-log"><td colspan="7"><pre>${esc(it.log)}</pre></td></tr>`;
+      return;
+    }
+    const rec = d.recommendation === 'stay' ? `«${esc(d.current_tariff_name)}»` : `«${esc(d.recommended_label || d.recommended_tariff_name)}»`;
+    const saving = Number(d.savings_per_month) > 0 ? `<span class="b-pos">−${fmt(d.savings_per_month)}</span>` : fmt(0);
+    h += `<tr class="b-row" tabindex="0" data-i="${i}" aria-label="Подробнее: абонент ${esc(id)}">
+      <td>${who}</td><td>${fmt(d.current_cost)}</td><td>${rec}</td><td>${fmt(d.new_cost)}</td><td>${saving}</td>
+      <td><span class="b-badge ${st.cls}">${st.text}</span></td><td>${chevron}</td></tr>`;
+  });
+  $('batchTable').innerHTML = h + '</tbody>';
+}
+
+function subscriberFromName(name) {
+  const m = /usage_(.+)\.csv$/i.exec(name || '');
+  return m ? m[1] : (name || '').replace(/\.csv$/i, '');
+}
+
+function openTariffDialog(i) {
+  const it = batch.items[i];
+  if (!it || (it.state !== 'done' && it.state !== 'pending')) return;
+  const id = it.data ? it.data.subscriber : subscriberFromName(it.name);
+  const sel = $('dlgTariff');
+  sel.innerHTML = '';
+  if (!it.chosen) sel.add(new Option('Выберите тариф', ''));
+  for (const o of Array.from($('current').options).filter((o) => o.value)) sel.add(new Option(o.text, o.value));
+  sel.value = it.chosen || '';
+  $('dlgTitle').textContent = `Абонент #${id}: текущий тариф`;
+  $('dlgText').textContent = it.chosen
+    ? `Сейчас выбран «${tariffNames[it.chosen] || it.chosen}». Выберите другой тариф — пересчитаем только этого абонента.`
+    : 'Выберите, на каком тарифе абонент сейчас, — рассчитаем и покажем, стоит ли переходить.';
+  $('dlgErr').textContent = '';
+  $('dlgOk').disabled = false;
+  $('dlgOk').textContent = 'Рассчитать';
+  $('tariffDlg').dataset.i = i;
+  $('tariffDlg').showModal();
+  sel.focus();
+}
+
+$('tariffForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const i = Number($('tariffDlg').dataset.i);
+  const it = batch.items[i];
+  const tariff = $('dlgTariff').value;
+  if (!tariff) { $('dlgErr').textContent = 'Выберите тариф из списка'; return; }
+  $('dlgOk').disabled = true;
+  $('dlgOk').textContent = 'Считаем…';
+  try {
+    await computeItem(it, tariff);
+    rememberChoice(it.name, tariff);
+    saveBatch();
+    renderBatch();
+    $('tariffDlg').close();
+    openDetail(i);
+  } catch (err) {
+    $('dlgErr').textContent = err.message;
+    $('dlgOk').disabled = false;
+    $('dlgOk').textContent = 'Рассчитать';
+  }
+});
+$('dlgCancel').addEventListener('click', () => $('tariffDlg').close());
+$('changeTariff').addEventListener('click', () => openTariffDialog(batch.current));
+
+function openSubscriber(i) {
+  const it = batch.items[i];
+  if (!it) return;
+  if (it.state === 'done') openDetail(i);
+  else if (it.state === 'pending') openTariffDialog(i);
+}
+
+$('batchTable').addEventListener('click', (e) => {
+  const log = e.target.closest('[data-log]');
+  if (log) {
+    const it = batch.items[Number(log.dataset.log)];
+    it.showLog = !it.showLog;
+    renderBatch();
+    return;
+  }
+  const row = e.target.closest('tr.b-row');
+  if (row) openSubscriber(Number(row.dataset.i));
+});
+$('batchTable').addEventListener('keydown', (e) => {
+  const row = e.target.closest('tr.b-row');
+  if (row && (e.key === 'Enter' || e.key === ' ') && e.target === row) { e.preventDefault(); openSubscriber(Number(row.dataset.i)); }
+});
+
+function batchExportRows() {
+  return batch.items.map((it) => {
+    const d = it.data || {};
+    return {
+      file: it.name,
+      id: d.id || d.subscriber || subscriberFromName(it.name),
+      status: batchStatus(it).text,
+      action: d.action || null,
+      current_tariff: it.chosen || null,
+      tariff_id: d.tariff_id || null,
+      addon_ids: d.addon_ids || [],
+      recommended: d.recommended_label || null,
+      current_monthly_cost: d.current_monthly_cost ?? null,
+      new_monthly_cost: d.new_monthly_cost ?? null,
+      monthly_savings: d.monthly_savings ?? null,
+      switch_fee: d.switch_fee ?? null,
+      net_savings_3m: d.net_savings_3m ?? null,
+      monthly_costs: d.monthly_costs || null,
+      skipped_rows: d.skipped_rows ?? it.skipped ?? 0,
+      error: it.error || null,
+    };
+  });
+}
+
+function download(name, type, text) {
+  const url = URL.createObjectURL(new Blob([text], { type }));
+  const a = Object.assign(document.createElement('a'), { href: url, download: name });
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+$('exportJson').addEventListener('click', () => {
+  download('tariff_batch.json', 'application/json', JSON.stringify(batchExportRows(), null, 2));
+});
+$('exportCsv').addEventListener('click', () => {
+  const cols = ['file', 'id', 'status', 'action', 'current_tariff', 'tariff_id', 'addon_ids', 'recommended',
+    'current_monthly_cost', 'new_monthly_cost', 'monthly_savings', 'switch_fee', 'net_savings_3m', 'skipped_rows', 'error'];
+  const cell = (v) => {
+    const s = Array.isArray(v) ? v.join(' ') : v == null ? '' : String(v);
+    return /[;"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+  const lines = [cols.join(';'), ...batchExportRows().map((r) => cols.map((c) => cell(r[c])).join(';'))];
+  download('tariff_batch.csv', 'text/csv;charset=utf-8', '﻿' + lines.join('\r\n'));
+});
+$('batchNew').addEventListener('click', () => {
+  clearBatch();
+  pick([]);
+  $('empty').classList.remove('hidden');
+  $('result').classList.add('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+function showBatchView() {
+  batch.current = -1;
+  $('empty').classList.add('hidden');
+  $('result').classList.add('hidden');
+  $('detailBar').classList.add('hidden');
+  const b = $('batch');
+  b.classList.remove('hidden', 'fade-in');
+  void b.offsetWidth;
+  b.classList.add('fade-in');
+  renderBatch();
+}
+
+function navIndexes() {
+  return batch.items.map((it, i) => (it.state === 'done' || it.state === 'pending' ? i : -1)).filter((i) => i >= 0);
+}
+
+function openDetail(i) {
+  const it = batch.items[i];
+  if (!it || it.state !== 'done') return;
+  batch.current = i;
+  $('batch').classList.add('hidden');
+  render(it.data);
+  if (it.explain) {
+    $('explain').textContent = it.explain.text;
+    $('explain').classList.remove('placeholder');
+    $('explainSrc').textContent = it.explain.src;
+    $('explainSrc').classList.remove('hidden');
+  }
+  const order = navIndexes();
+  const pos = order.indexOf(i);
+  $('detailPos').textContent = `Абонент ${pos + 1} из ${order.length}`;
+  $('prevSub').disabled = pos <= 0;
+  $('nextSub').disabled = pos >= order.length - 1;
+  $('changeTariff').textContent = `Тариф «${tariffNames[it.chosen] || it.chosen}» · изменить`;
+  $('detailBar').classList.remove('hidden');
+  const r = $('result');
+  r.classList.remove('fade-in');
+  void r.offsetWidth;
+  r.classList.add('fade-in');
+  window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+}
+
+function backToBatch() {
+  const i = batch.current;
+  showBatchView();
+  const row = $('batchTable').querySelector(`tr.b-row[data-i="${i}"]`);
+  if (row) {
+    row.scrollIntoView({ block: 'center' });
+    row.classList.add('flash');
+    row.focus({ preventScroll: true });
+  }
+}
+
+function stepDetail(dir) {
+  const order = navIndexes();
+  const pos = order.indexOf(batch.current) + dir;
+  if (pos >= 0 && pos < order.length) openSubscriber(order[pos]);
+}
+
+$('backToBatch').addEventListener('click', backToBatch);
+$('prevSub').addEventListener('click', () => stepDetail(-1));
+$('nextSub').addEventListener('click', () => stepDetail(1));
+document.addEventListener('keydown', (e) => {
+  if (batch.current < 0 || $('onboarding').hidden === false || $('tariffDlg').open || e.target.closest('input, select, textarea')) return;
+  if (e.key === 'Escape') backToBatch();
+});
+
+const num = (v, max = 2) => Number(v).toLocaleString('ru-RU', { maximumFractionDigits: max });
+
+function drawUsageMonths(d) {
+  const usage = d.monthly_usage || {};
+  const bd = d.current_monthly_breakdown || null;
+  const months = Object.keys(usage);
+  const card = $('usageMonthsCard');
+  card.classList.toggle('hidden', !months.length);
+  if (!months.length) return;
+  const over = (m) => {
+    if (!bd || !bd[m]) return null;
+    const b = bd[m];
+    return Number(b.over_minutes) + Number(b.over_data) + Number(b.over_sms);
+  };
+  const label = (m) => new Date(m + '-01T00:00:00').toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+  const roam = (u) => {
+    const parts = [];
+    if (Number(u.roam_minutes)) parts.push(`${num(u.roam_minutes)} мин`);
+    if (Number(u.roam_gb)) parts.push(`${num(u.roam_gb, 3)} ГБ`);
+    if (Number(u.roam_sms)) parts.push(`${num(u.roam_sms)} SMS`);
+    return parts.length ? parts.join(' · ') : '—';
+  };
+  const tot = { minutes: 0, sms: 0, data: 0, night: 0, over: 0 };
+  let h = `<thead><tr><th>Месяц</th><th>Звонки, мин</th><th>Интернет, ГБ</th><th>SMS</th><th>Роуминг</th><th>${bd ? `Сверх пакета на «${esc(d.current_tariff_name)}», сом` : 'Сверх пакета'}</th></tr></thead><tbody>`;
+  for (const m of months) {
+    const u = usage[m];
+    const o = over(m);
+    tot.minutes += Number(u.minutes); tot.sms += Number(u.sms); tot.data += Number(u.data_gb); tot.night += Number(u.night_gb);
+    if (o != null) tot.over += o;
+    h += `<tr><td>${esc(label(m))}</td><td>${num(u.minutes)}</td><td>${num(u.data_gb, 3)}${Number(u.night_gb) ? `<small>ночью ${num(u.night_gb, 3)}</small>` : ''}</td>
+      <td>${num(u.sms)}</td><td>${roam(u)}</td><td class="${o > 0.005 ? 'over' : ''}">${o == null ? '—' : fmt(o)}</td></tr>`;
+  }
+  h += `</tbody><tfoot><tr><td>Всего</td><td>${num(tot.minutes)}</td><td>${num(tot.data, 3)}${tot.night ? `<small>ночью ${num(tot.night, 3)}</small>` : ''}</td><td>${num(tot.sms)}</td><td></td><td>${bd ? fmt(tot.over) : '—'}</td></tr></tfoot>`;
+  $('usageMonths').innerHTML = h;
+}
+
+$('sampleAll').addEventListener('click', () => {
+  const samples = Array.from($('sample').options).map((o) => o.value).filter(Boolean);
+  if (!samples.length) { snackbar('В папке data нет примеров'); return; }
+  const current = $('current').value;
+  startBatch(sampleEntries(samples), `Примеры из папки data: ${samples.length}${current ? ' · тариф для всех: ' + $('current').selectedOptions[0].text : ' · тариф выбирается для каждого абонента'}`, current);
+});
+
+init().then(restoreBatch);
+
+(() => {
+  const KEY = 'onboarding_seen';
+  const num = (v) => Number(v).toLocaleString('ru-RU');
+  const W = 640;
+  const STOP = Symbol('stop');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const scrim = $('onboarding'), app = $('mApp'), cur = $('mCursor');
+
+  const DASH = [
+    { tag: 'Текущий · большой перерасход', tagCls: 'bad', title: 'Старт', foot: 'Итого 1 170 сом/мес', footCls: 'bad', cols: [
+      { l: 'Стоимость', v: 1170, lim: 100, u: 'сом', S: 1310 }, { l: 'Интернет', v: 9, lim: 1, u: 'ГБ', S: 10.1 },
+      { l: 'Звонки', v: 240, lim: 50, u: 'мин', S: 269 }, { l: 'SMS', v: 70, lim: 20, u: 'шт', S: 112 }] },
+    { tag: 'Рекомендуемый', tagCls: 'rec', rec: true, title: 'Комфорт', foot: '420 сом/мес · экономия 750', footCls: 'good', cols: [
+      { l: 'Стоимость', v: 420, lim: 300, u: 'сом', S: 1310 }, { l: 'Интернет', v: 9, lim: 8, u: 'ГБ', S: 10.1 },
+      { l: 'Звонки', v: 240, lim: 200, u: 'мин', S: 269 }, { l: 'SMS', v: 70, lim: 100, u: 'шт', S: 112 }] },
+  ];
+  const TIPS = [
+    [0, 0, '<b>Старт · стоимость 1 170 сом</b><div><span>Абонплата</span><span>100</span></div><div><span>Сверх пакета</span><span>1 070</span></div><em>Чёрная линия — абонплата, всё выше неё — переплата</em>'],
+    [1, 0, '<b>Комфорт · 420 сом/мес</b><div><span>Абонплата</span><span>300</span></div><div><span>Сверх пакета</span><span>120</span></div><em>На 750 сом в месяц дешевле, чем сейчас</em>'],
+    [1, 1, '<b>Интернет · 9 ГБ из 8</b><em>Оранжевый — небольшой перерасход: +1 ГБ</em>'],
+  ];
+  const kindOf = (over, lim) => (over <= 0 ? '' : over / lim <= 0.25 ? 'minor' : 'over');
+  const pct = (v, S) => Math.min(100, (v / S) * 100);
+  $('mDash').innerHTML = DASH.map((p) => `<div class="md-p${p.rec ? ' rec' : ''}"><span class="md-tag ${p.tagCls}">${p.tag}</span><b class="md-t">${p.title}</b><div class="md-cols">${
+    p.cols.map((c) => {
+      const over = Math.max(0, c.v - c.lim), k = kindOf(over, c.lim), inP = Math.min(c.v, c.lim);
+      const st = over > 0 ? `<div class="md-st ${k}">+${num(over)} ${c.u}</div>` : `<div class="md-st ok">запас ${num(c.lim - c.v)}</div>`;
+      return `<div class="md-col"><div class="md-track" style="--h:${pct(c.v, c.S)}%"><div class="md-bar"><i class="s-in" style="height:${(inP / c.v) * 100}%"></i>${over > 0 ? `<i class="s-${k}" style="height:${(over / c.v) * 100}%"></i>` : ''}</div>`
+        + `<div class="md-val ${k}">${num(c.v)}</div><div class="md-line" style="top:${100 - pct(c.lim, c.S)}%"></div></div><div class="md-lbl">${c.l}</div>${st}</div>`;
+    }).join('')}</div><div class="md-foot ${p.footCls}">${p.foot}</div></div>`).join('');
+  [...$('mDash').querySelectorAll('.md-bar, .md-val')].forEach((b, i) => { b.style.transitionDelay = Math.floor(i / 2) * 60 + 'ms'; });
+  const EXPLAIN = 'Сейчас на тарифе «Старт» вы платите в среднем 1170 сом в месяц. С вариантом «Комфорт» за то же потребление вышло бы 420 сом — это на 750 сом в месяц дешевле. Смена тарифа стоит 50 сом, и даже с этой платой за 3 месяца вы сэкономите 2200 сом.';
+  const PLACEHOLDER = 'Короткий текст простыми словами: что выгоднее и почему.';
+
+  const S0 = { mode: 'file', file: false, result: false, chart: false, scroll: 'top', explain: false };
+  const STATES = [S0, S0, { ...S0, file: true }, { ...S0, file: true },
+    { ...S0, file: true, result: true }, { ...S0, file: true, result: true, chart: true, scroll: 'chart' },
+    { ...S0, file: true, result: true, chart: true, scroll: 'explain', explain: true }];
+
+  let scale = 1, run = 0, step = 0, cx = 0, cy = 0;
+
+  function fit() { scale = $('obScreen').clientWidth / W || 1; app.style.transform = `scale(${scale})`; }
+
+  function setMode(m) {
+    $('mForm').classList.toggle('sample', m === 'sample');
+    $('mSegFile').classList.toggle('on', m === 'file');
+    $('mSegSample').classList.toggle('on', m === 'sample');
+  }
+  function setFile(on) {
+    $('mDrop').classList.toggle('has-file', on);
+    $('mDropT').textContent = on ? 'usage_P03.csv' : 'Перетащите usage_<id>.csv';
+    $('mDropS').textContent = on ? '✓ Файл выбран · нажмите, чтобы заменить' : 'или нажмите, чтобы выбрать';
+  }
+  function setScroll(where) {
+    const el = where === 'chart' ? $('mChart') : where === 'explain' ? $('mExplain') : null;
+    const view = $('mScroll').parentElement.clientHeight;
+    const max = Math.max(0, $('mScroll').scrollHeight - view);
+    const y = el ? Math.min(max, el.offsetTop - 8) : 0;
+    $('mScroll').style.transform = `translateY(${-y}px)`;
+  }
+  function setStats(final) {
+    app.querySelectorAll('.m-stat b').forEach((b) => { b.textContent = final ? num(b.dataset.v) : '0'; });
+  }
+
+  function apply(s) {
+    app.classList.add('m-instant');
+    setMode(s.mode); setFile(s.file);
+    ['mMenu', 'mTip', 'mFile', 'mSrc'].forEach((id) => $(id).classList.remove('open', 'show', 'drag'));
+    $('mDrop').classList.remove('over'); $('mSel').classList.remove('focus'); $('mHint').classList.remove('flash');
+    $('mGo').classList.remove('press'); $('mProg').classList.remove('on');
+    app.querySelectorAll('.md-col').forEach((r) => r.classList.remove('hover'));
+    $('mEmpty').classList.toggle('gone', s.result);
+    $('mResult').classList.toggle('show', s.result);
+    setStats(s.result);
+    $('mDash').classList.toggle('zero', !s.chart);
+    $('mExplainT').textContent = s.explain ? EXPLAIN : PLACEHOLDER;
+    $('mExplainT').classList.toggle('placeholder', !s.explain);
+    $('mSrc').classList.toggle('show', s.explain);
+    setScroll(s.scroll);
+    place(470, 300);
+    void app.offsetWidth;
+    app.classList.remove('m-instant');
+  }
+
+  const wait = (ms, t) => new Promise((res, rej) => setTimeout(() => (t === run ? res() : rej(STOP)), ms));
+  function place(x, y) { cx = x; cy = y; cur.style.transform = `translate(${x}px, ${y}px)`; }
+  function at(el, ax = 0.5, ay = 0.5) {
+    const a = app.getBoundingClientRect(), r = el.getBoundingClientRect();
+    return [(r.left - a.left + r.width * ax) / scale, (r.top - a.top + r.height * ay) / scale];
+  }
+  async function move(el, t, ax, ay, ms = 650) {
+    const [x, y] = at(el, ax, ay);
+    cur.style.transitionDuration = ms + 'ms';
+    place(x, y);
+    await wait(ms + 60, t);
+  }
+  async function click(t, el) {
+    const rp = $('mRipple');
+    rp.style.left = cx + 'px'; rp.style.top = cy + 'px';
+    rp.classList.remove('go'); void rp.offsetWidth; rp.classList.add('go');
+    cur.classList.add('down'); if (el) el.classList.add('press');
+    await wait(170, t);
+    cur.classList.remove('down'); if (el) el.classList.remove('press');
+    await wait(150, t);
+  }
+  async function countUp(t) {
+    const els = [...app.querySelectorAll('.m-stat b')];
+    const t0 = performance.now();
+    await new Promise((res) => {
+      const tick = (now) => {
+        if (t !== run) return res();
+        const k = Math.min(1, (now - t0) / 800), e = 1 - Math.pow(1 - k, 3);
+        els.forEach((b) => { b.textContent = num(Math.round(b.dataset.v * e)); });
+        if (k < 1) requestAnimationFrame(tick); else res();
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+  function colEl(pi, ci) { return $('mDash').children[pi].querySelectorAll('.md-col')[ci]; }
+  function showTip(n) {
+    const [pi, ci, html] = TIPS[n], col = colEl(pi, ci);
+    app.querySelectorAll('.md-col').forEach((r) => r.classList.toggle('hover', r === col));
+    $('mTip').innerHTML = html;
+    const [x, y] = at(col, 0.5, 1);
+    $('mTip').style.left = Math.max(4, Math.min(W - 186, x - 88)) + 'px';
+    $('mTip').style.top = (y + 4) + 'px';
+    $('mTip').classList.add('show');
+  }
+
+  const STEPS = [
+    {
+      title: 'Выберите, откуда взять данные',
+      lead: 'Переключатель в начале формы задаёт источник детализации абонента.',
+      ref: [['Свой файл', 'загрузить свой CSV с детализацией'], ['Пример', 'взять готовый файл из папки data — чтобы попробовать без своих данных']],
+      async play(t) {
+        await move($('mSegSample'), t);
+        await click(t); setMode('sample');
+        await wait(500, t);
+        await move($('mSample'), t, 0.6, 0.6, 500);
+        await wait(900, t);
+        await move($('mSegFile'), t, 0.5, 0.5, 600);
+        await click(t); setMode('file');
+        await wait(400, t);
+        await move($('mDrop'), t, 0.55, 0.6, 500);
+      },
+    },
+    {
+      title: 'Перетащите файл детализации',
+      lead: 'Бросьте usage_<id>.csv в рамку или нажмите на неё и выберите файл. Нужны колонки date, type, amount — из них считаем звонки, интернет, SMS и роуминг по месяцам.',
+      ref: [['Рамка загрузки', 'принимает CSV перетаскиванием или по нажатию']],
+      async play(t) {
+        const f = $('mFile');
+        f.style.transitionDuration = '0ms';
+        f.style.transform = 'translate(440px, 330px)';
+        void f.offsetWidth;
+        f.classList.add('show');
+        await move(f, t, 0.3, 0.5, 600);
+        await wait(200, t);
+        cur.classList.add('down'); f.classList.add('drag');
+        await wait(200, t);
+        const [x, y] = at($('mDrop'), 0.5, 0.5);
+        const fw = f.offsetWidth;
+        f.style.transitionDuration = '';
+        f.style.transform = `translate(${x - fw * 0.3}px, ${y - 13}px) rotate(-3deg)`;
+        cur.style.transitionDuration = '900ms'; place(x, y);
+        await wait(450, t);
+        $('mDrop').classList.add('over');
+        await wait(600, t);
+        cur.classList.remove('down');
+        f.classList.remove('show', 'drag');
+        $('mDrop').classList.remove('over'); setFile(true);
+        await wait(300, t);
+        await move($('mDrop'), t, 0.85, 1.25, 500);
+      },
+    },
+    {
+      title: 'Текущий тариф — можно не указывать',
+      lead: 'Оставьте «Определить по данным»: тариф возьмём из колонки tariff в CSV или из subscribers.json по номеру абонента. Не нашли — покажем самый дешёвый вариант и попросим указать тариф, чтобы посчитать экономию.',
+      ref: [['Текущий тариф', 'выбрать тариф вручную, если знаете его']],
+      async play(t) {
+        await move($('mSel'), t, 0.7, 0.5);
+        await click(t);
+        $('mSel').classList.add('focus');
+        const [x, y] = at($('mSel'), 0, 1);
+        $('mMenu').style.left = x + 'px'; $('mMenu').style.top = (y + 2) + 'px';
+        $('mMenu').classList.add('open');
+        await wait(400, t);
+        const opts = [...$('mMenu').children];
+        for (const i of [2, 1, 0]) {
+          opts.forEach((o, j) => o.classList.toggle('hover', j === i));
+          await move(opts[i], t, 0.4, 0.5, 380);
+          await wait(180, t);
+        }
+        await click(t);
+        $('mMenu').classList.remove('open'); opts.forEach((o) => o.classList.remove('hover'));
+        $('mSel').classList.remove('focus');
+        $('mHint').classList.add('flash');
+        await wait(1400, t);
+        $('mHint').classList.remove('flash');
+      },
+    },
+    {
+      title: 'Нажмите «Подобрать тариф»',
+      lead: 'Калькулятор посчитает каждый месяц на всех тарифах с 0–2 доппакетами и выдаст вердикт: перейти, остаться или подключить пакеты. Переход стоит 50 сом — советуем его, только если экономия за 3 месяца больше этой платы.',
+      ref: [['Подобрать тариф', 'запустить расчёт', 'y']],
+      async play(t) {
+        await move($('mGo'), t, 0.5, 0.55);
+        await click(t, $('mGo'));
+        $('mProg').classList.add('on');
+        await wait(900, t);
+        $('mProg').classList.remove('on');
+        $('mEmpty').classList.add('gone');
+        $('mResult').classList.add('show');
+        await wait(250, t);
+        await countUp(t);
+        await move($('mResult').querySelector('.m-stat.accent'), t, 0.5, 0.8, 700);
+      },
+    },
+    {
+      title: 'Сравните текущий и рекомендуемый тариф',
+      lead: 'Слева — ваш тариф сейчас, справа — рекомендуемый. Столбики — стоимость, интернет, звонки и SMS в месяц, чёрная линия — лимит пакета. Всё, что выше линии, — перерасход: оранжевый — небольшой, красный — большой. Внизу каждой карточки — итог и экономия.',
+      ref: [['Чёрная линия', 'лимит пакета или абонплата'], ['Оранжевый / красный', 'небольшой / большой перерасход']],
+      async play(t) {
+        setScroll('chart');
+        await wait(650, t);
+        $('mDash').classList.remove('zero');
+        await wait(1300, t);
+        for (let n = 0; n < TIPS.length; n++) {
+          await move(colEl(TIPS[n][0], TIPS[n][1]), t, 0.5, 0.45, n ? 550 : 650);
+          showTip(n);
+          await wait(2100, t);
+        }
+        $('mTip').classList.remove('show');
+        app.querySelectorAll('.md-col').forEach((r) => r.classList.remove('hover'));
+      },
+    },
+    {
+      title: 'Получите объяснение простыми словами',
+      lead: 'Кнопка «Объяснить» превращает расчёт в короткий текст для абонента — все цифры берутся из расчёта. Ниже на странице есть полный ответ recommend() в JSON.',
+      ref: [['Объяснить', 'написать вывод простыми словами'], ['Как это работает', 'открыть эту инструкцию снова']],
+      async play(t) {
+        setScroll('explain');
+        await wait(700, t);
+        await move($('mExplainBtn'), t);
+        await click(t, $('mExplainBtn'));
+        const p = $('mExplainT');
+        p.classList.remove('placeholder'); p.textContent = '';
+        for (let i = 0; i < EXPLAIN.length; i += 3) {
+          p.textContent = EXPLAIN.slice(0, i + 3);
+          await wait(28, t);
+        }
+        $('mSrc').classList.add('show');
+        await move(p, t, 0.8, 1.1, 600);
+      },
+    },
+  ];
+  const LAST = STEPS.length - 1;
+
+  $('obDots').innerHTML = STEPS.map((s, i) => `<button type="button" aria-label="Шаг ${i + 1}: ${s.title}"></button>`).join('');
+  const dots = [...$('obDots').children];
+
+  async function play(i) {
+    const t = ++run;
+    apply(STATES[i]);
+    if (reduced) { apply(STATES[i + 1]); return; }
+    try {
+      await wait(500, t);
+      await STEPS[i].play(t);
+      await wait(2600, t);
+      play(i);
+    } catch (e) { if (e !== STOP) throw e; }
+  }
+
+  function go(n) {
+    step = Math.max(0, Math.min(LAST, n));
+    const s = STEPS[step];
+    const box = $('obText');
+    box.classList.add('swap');
+    setTimeout(() => {
+      $('obKicker').textContent = `Шаг ${step + 1} из ${STEPS.length}`;
+      $('obTitle').textContent = s.title;
+      $('obLead').textContent = s.lead;
+      $('obRef').innerHTML = s.ref.map(([b, what, cls]) => `<div><span class="ob-chip${cls ? ' ' + cls : ''}">${esc(b)}</span>${esc(what)}</div>`).join('');
+      box.classList.remove('swap');
+    }, reduced ? 0 : 150);
+    dots.forEach((d, i) => {
+      d.classList.toggle('on', i === step);
+      d.classList.toggle('done', i < step);
+      d.setAttribute('aria-current', i === step ? 'step' : 'false');
+    });
+    $('obBack').hidden = step === 0;
+    $('obNext').textContent = step === LAST ? 'Перейти к калькулятору' : 'Далее →';
+    play(step);
+  }
+
+  let returnFocus = null;
+  function open() {
+    returnFocus = document.activeElement;
+    scrim.hidden = false;
+    document.body.classList.add('ob-open');
+    fit();
+    go(0);
+    void scrim.offsetWidth;
+    scrim.classList.add('show');
+    $('obNext').focus({ preventScroll: true });
+  }
+  function close() {
+    run++;
+    try { sessionStorage.setItem(KEY, '1'); } catch (e) { }
+    scrim.classList.remove('show');
+    document.body.classList.remove('ob-open');
+    setTimeout(() => { scrim.hidden = true; }, 300);
+    const back = returnFocus && returnFocus !== document.body ? returnFocus : $('drop');
+    back.focus({ preventScroll: true });
+  }
+
+  $('obNext').addEventListener('click', () => (step < LAST ? go(step + 1) : close()));
+  $('obBack').addEventListener('click', () => go(step - 1));
+  $('obReplay').addEventListener('click', () => play(step));
+  $('obSkip').addEventListener('click', close);
+  dots.forEach((d, i) => d.addEventListener('click', () => go(i)));
+  $('openOnboarding').addEventListener('click', open);
+  new ResizeObserver(() => { if (!scrim.hidden) { fit(); play(step); } }).observe($('obScreen'));
+
+  document.addEventListener('keydown', (e) => {
+    if (scrim.hidden) return;
+    if (e.key === 'Escape') { e.preventDefault(); close(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); go(step + 1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); go(step - 1); }
+    else if (e.key === 'Tab') {
+      const f = [...$('obCard').querySelectorAll('button')].filter((b) => !b.hidden);
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+
+  if (document.documentElement.classList.contains('ob-seen')) {
+    scrim.hidden = true; scrim.classList.remove('show');
+    document.documentElement.classList.remove('ob-seen');
+  } else open();
+})();
+</script>
+</body>
+</html>
